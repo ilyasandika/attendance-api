@@ -1,0 +1,1750 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Attendance API",
+        "version": "1.0"
+    },
+    "paths": {
+        "/dashboard": {
+            "get": {
+                "summary": "Get Overall Employee Attendance Statistic",
+                "tags": ["Dashboard"],
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Date for showing statistic (timestamp), default: today",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved Dashboard Statistic",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "serverTimestamp": {
+                                                    "type": "integer",
+                                                    "description": "Unix timestamp of the server time in seconds"
+                                                },
+                                                "onTimeEmployees": {
+                                                    "type": "integer",
+                                                    "description": "The number of employees who are on time"
+                                                },
+                                                "absentEmployees": {
+                                                    "type": "integer",
+                                                    "description": "The number of employees who are absent"
+                                                },
+                                                "lateArrivalEmployees": {
+                                                    "type": "integer",
+                                                    "description": "The number of employees who arrived late"
+                                                },
+                                                "earlyDepartureEmployees": {
+                                                    "type": "integer",
+                                                    "description": "The number of employees who left early"
+                                                },
+                                                "dayOffEmployees": {
+                                                    "type": "integer",
+                                                    "description": "The number of employees on their day off"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/unauthorizedResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/statistics/weekly": {
+            "get": {
+                "summary": "Get Attendance statistics for last 7 days",
+                "tags": ["Dashboard"],
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retreived attendance statistics for last 7 days",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "date": {
+                                                        "type": "integer",
+                                                        "description": "10-digit timestamp representing date",
+                                                        "example": "1699027592"
+                                                    },
+                                                    "totalEmployeeAttendance": {
+                                                        "type": "integer",
+                                                        "description": "Total number of employee attendances on that day",
+                                                        "example": 80
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/unauthorizedResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/statistics/department": {
+            "get": {
+                "summary": "Get attendance statistic by department in last 7 days",
+                "tags": ["Dashboard"],
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved attendance statistic by department in last 7 days",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "department": {
+                                                        "type": "string"
+                                                    },
+                                                    "totalEmployeeAttendance": {
+                                                        "type": "integer",
+                                                        "description": "Total number of employee attendances on that day",
+                                                        "example": 80
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/attendance/": {
+            "get": {
+                "summary": "Get employee attendance list",
+                "tags": ["Dashboard", "Attendance"],
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "date-start",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "timestamp"
+                        }
+                    },
+                    {
+                        "name": "date-end",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "timestamp"
+                        }
+                    },
+                    {
+                        "name": "departmentId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "employeeName",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved attendance list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "attendanceId": {
+                                                        "type": "integer"
+                                                    },
+                                                    "employeeId": {
+                                                        "type": "integer"
+                                                    },
+                                                    "employeeName": {
+                                                        "type": "string"
+                                                    },
+                                                    "employeeRole": {
+                                                        "type": "string"
+                                                    },
+                                                    "employeeDepartment": {
+                                                        "type": "string"
+                                                    },
+                                                    "attendanceDate": {
+                                                        "type": "string"
+                                                    },
+                                                    "checkInTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "checkOutTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "employeeWorkHours": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create an attendance (Check In)",
+                "tags": ["Attendance"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "employeeId": {
+                                        "type": "string"
+                                    },
+                                    "latitude": {
+                                        "type": "integer",
+                                        "format": "double"
+                                    },
+                                    "longtitude": {
+                                        "type": "integer",
+                                        "format": "dobule"
+                                    },
+                                    "photoPath": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully create an attendance (Check In)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update an attendance (Check Out)",
+                "tags": ["Attendance"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "employeeId": {
+                                        "type": "string"
+                                    },
+                                    "latitude": {
+                                        "type": "integer",
+                                        "format": "double"
+                                    },
+                                    "longtitude": {
+                                        "type": "integer",
+                                        "format": "dobule"
+                                    },
+                                    "photoPath": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully create an attendance (Check In)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/attendance/{id}": {
+            "get": {
+                "tags": ["Dashboard", "Attendance"],
+                "summary": "Get attendance detail",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved attendance detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "attendanceId": {
+                                                    "type": "integer"
+                                                },
+                                                "employeeId": {
+                                                    "type": "integer"
+                                                },
+                                                "employeeName": {
+                                                    "type": "string"
+                                                },
+                                                "employeeRole": {
+                                                    "type": "string"
+                                                },
+                                                "employeeDepartment": {
+                                                    "type": "string"
+                                                },
+                                                "attendanceDate": {
+                                                    "type": "string"
+                                                },
+                                                "checkInTime": {
+                                                    "type": "integer"
+                                                },
+                                                "checkOutTime": {
+                                                    "type": "integer"
+                                                },
+                                                "employeeWorkHours": {
+                                                    "type": "integer"
+                                                },
+                                                "status": {
+                                                    "type": "integer"
+                                                },
+                                                "inPhotoPath": {
+                                                    "type": "string"
+                                                },
+                                                "outPhotoPath": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "summary": "Get user list",
+                "tags": ["User"],
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved user list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "employeeId": {
+                                                        "type": "integer"
+                                                    },
+                                                    "employeeName": {
+                                                        "type": "string"
+                                                    },
+                                                    "employeeRole": {
+                                                        "type": "string"
+                                                    },
+                                                    "employeeDepartment": {
+                                                        "type": "string"
+                                                    },
+                                                    "dateCreated": {
+                                                        "type": "integer",
+                                                        "description": "timestamp"
+                                                    },
+                                                    "employeeEmail": {
+                                                        "type": "string"
+                                                    },
+                                                    "accountStatus": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create new emlpoyee",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "employeeId": {
+                                        "type": "integer"
+                                    },
+                                    "employeeName": {
+                                        "type": "string"
+                                    },
+                                    "employeeGender": {
+                                        "type": "string"
+                                    },
+                                    "employeeBirthDate": {
+                                        "type": "integer",
+                                        "description": "timestamp"
+                                    },
+                                    "employeePhoneNumber": {
+                                        "type": "string"
+                                    },
+                                    "employeeEmail": {
+                                        "type": "string"
+                                    },
+                                    "employeeRole": {
+                                        "type": "string"
+                                    },
+                                    "employeeDepartment": {
+                                        "type": "string"
+                                    },
+                                    "employeeShift": {
+                                        "type": "string"
+                                    },
+                                    "employeeWorkLocation": {
+                                        "type": "string"
+                                    },
+                                    "employeePassword": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": ["User"],
+                "responses": {
+                    "200": {
+                        "description": "Successfully create new user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "employeeId": {
+                                                    "type": "integer"
+                                                },
+                                                "employeeName": {
+                                                    "type": "string"
+                                                },
+                                                "dateCreated": {
+                                                    "type": "integer",
+                                                    "description": "timestamp"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": ["User"],
+                "summary": "Get an employee detail",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved an employee detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "integer"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/employeeResponse"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update an emlpoyee",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/employeeRequest"
+                            }
+                        }
+                    }
+                },
+                "tags": ["User"],
+                "responses": {
+                    "200": {
+                        "description": "Successfully update a user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "employeeId": {
+                                                    "type": "integer"
+                                                },
+                                                "employeeName": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["User"],
+                "summary": "Delete an employee",
+                "responses": {
+                    "200": {
+                        "description": "Successfully delete an employee",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/recent": {
+            "get": {
+                "summary": "Get recent user registration",
+                "tags": ["User"],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved recent user registration",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "employeeName": {
+                                                        "type": "string"
+                                                    },
+                                                    "Created At": {
+                                                        "type": "integer",
+                                                        "description": "timestamp"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/overview": {
+            "get": {
+                "tags": ["User"],
+                "summary": "Get employee statistic by department",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved employee statistic by department",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "departmentName": {
+                                                        "type": "string"
+                                                    },
+                                                    "totalEmployee": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/schedules/shifts": {
+            "get": {
+                "summary": "Get shift list",
+                "tags": ["Schedule"],
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retreived shift list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/shiftResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create shift",
+                "tags": ["Schedule"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/shiftRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully create shift",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/shiftResponse"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/schedules/shifts/{id}": {
+            "get": {
+                "summary": "Get shift detail",
+                "tags": ["Schedule"],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retreived shift detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/shiftResponse"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update shift",
+                "tags": ["Schedule"],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "statusCode": {
+                                        "type": "integer"
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    },
+                                    "data": {
+                                        "$ref": "#/components/schemas/shiftRequest"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully update shift",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/shiftResponse"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete shift",
+                "tags": ["Schedule"],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully delete shift",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/schedules/locations": {
+            "get": {
+                "summary": "Get location list",
+                "tags": ["Schedule"],
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retreived location list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/locationResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create new location",
+                "tags": ["Schedule"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/locationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully create new location",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/locationResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/schedules/locations/{id}": {
+            "get": {
+                "summary": "Get location detail",
+                "tags": ["Schedule"],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retreived location detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/locationResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update ",
+                "tags": ["Schedule"],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "statusCode": {
+                                        "type": "integer"
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    },
+                                    "data": {
+                                        "$ref": "#/components/schemas/locationRequest"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully update location",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/locationResponse"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete location",
+                "tags": ["Schedule"],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted location detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/schedules": {
+            "get": {
+                "summary": "Get employee schedule list",
+                "tags": ["Schedule"],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved employee schedule list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/employeeScheduleResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/schedules/{id}": {
+            "put": {
+                "summary": "Update employee schedule",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/employeeScheduleRequest"
+                            }
+                        }
+                    }
+                },
+                "tags": ["Schedule"],
+                "responses": {
+                    "200": {
+                        "description": "Successfully update employee schedule",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "employeeId": {
+                                                    "type": "integer"
+                                                },
+                                                "employeeName": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "unauthorizedResponse": {
+                "type": "object",
+                "properties": {
+                    "statusCode": {
+                        "type": "integer",
+                        "example": 401
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "UNAUTHORIZED"
+                    }
+                }
+            },
+            "employeeRequest": {
+                "type": "object",
+                "properties": {
+                    "employeeId": {
+                        "type": "integer"
+                    },
+                    "employeeName": {
+                        "type": "string"
+                    },
+                    "employeeGender": {
+                        "type": "string"
+                    },
+                    "employeeBirthDate": {
+                        "type": "integer",
+                        "description": "timestamp"
+                    },
+                    "employeePhoneNumber": {
+                        "type": "string"
+                    },
+                    "employeeEmail": {
+                        "type": "string"
+                    },
+                    "employeeRole": {
+                        "type": "string"
+                    },
+                    "employeeDepartment": {
+                        "type": "string"
+                    },
+                    "employeeShift": {
+                        "type": "string"
+                    },
+                    "employeeWorkLocation": {
+                        "type": "string"
+                    },
+                    "employeePassword": {
+                        "type": "string"
+                    },
+                    "employeeWhatsApp": {
+                        "type": "string"
+                    },
+                    "employeeLinkedin": {
+                        "type": "string"
+                    },
+                    "employeeTelegram": {
+                        "type": "string"
+                    },
+                    "employeeBiography": {
+                        "type": "string"
+                    }
+                }
+            },
+            "employeeResponse": {
+                "type": "object",
+                "properties": {
+                    "employeeId": {
+                        "type": "integer"
+                    },
+                    "employeeName": {
+                        "type": "string"
+                    },
+                    "employeeGender": {
+                        "type": "string"
+                    },
+                    "employeeBirthDate": {
+                        "type": "integer",
+                        "description": "timestamp"
+                    },
+                    "employeePhoneNumber": {
+                        "type": "string"
+                    },
+                    "employeeEmail": {
+                        "type": "string"
+                    },
+                    "employeeRole": {
+                        "type": "string"
+                    },
+                    "employeeDepartment": {
+                        "type": "string"
+                    },
+                    "employeeShift": {
+                        "type": "string"
+                    },
+                    "employeeWorkLocation": {
+                        "type": "string"
+                    },
+                    "employeeWhatsApp": {
+                        "type": "string"
+                    },
+                    "employeeLinkedin": {
+                        "type": "string"
+                    },
+                    "employeeTelegram": {
+                        "type": "string"
+                    },
+                    "employeeBiography": {
+                        "type": "string"
+                    }
+                }
+            },
+            "shiftRequest": {
+                "type": "object",
+                "properties": {
+                    "shiftName": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "monday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "tuesday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "wednesday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "thursday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "friday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "saturday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "sunday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    }
+                }
+            },
+            "shiftResponse": {
+                "type": "object",
+                "properties": {
+                    "scheduleId": {
+                        "type": "integer"
+                    },
+                    "shiftName": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "monday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "tuesday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "wednesday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "thursday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "friday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "saturday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "sunday": {
+                        "type": "object",
+                        "properties": {
+                            "in": {
+                                "type": "string"
+                            },
+                            "out": {
+                                "type": "string"
+                            },
+                            "break": {
+                                "type": "boolean"
+                            }
+                        }
+                    }
+                }
+            },
+            "locationRequest": {
+                "type": "object",
+                "properties": {
+                    "locationName": {
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "longtitude": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "radius": {
+                        "type": "integer"
+                    },
+                    "address": {
+                        "type": "string"
+                    }
+                }
+            },
+            "locationResponse": {
+                "type": "object",
+                "properties": {
+                    "locationId": {
+                        "type": "integer"
+                    },
+                    "locationName": {
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "longtitude": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "radius": {
+                        "type": "integer"
+                    },
+                    "address": {
+                        "type": "string"
+                    }
+                }
+            },
+            "employeeScheduleRequest": {
+                "type": "object",
+                "properties": {
+                    "employeeId": {
+                        "type": "string"
+                    },
+                    "employeeShiftId": {
+                        "type": "string"
+                    },
+                    "employeeWorkLocationId": {
+                        "type": "string"
+                    }
+                }
+            },
+            "employeeScheduleResponse": {
+                "type": "object",
+                "properties": {
+                    "schedulesId": {
+                        "type": "integer"
+                    },
+                    "employeeId": {
+                        "type": "string"
+                    },
+                    "employeeName": {
+                        "type": "string"
+                    },
+                    "employeeRole": {
+                        "type": "string"
+                    },
+                    "employeeDepartment": {
+                        "type": "string"
+                    },
+                    "employeeShift": {
+                        "type": "string"
+                    },
+                    "employeeWorkLocation": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
