@@ -1,5 +1,5 @@
 #!/bin/bash
-curl -X POST "http://localhost:8000/api/user" \
+curl -X POST "http://localhost:8000/api/users" \
      -H "Content-Type: application/json" \
      -d '{
             "employeeId": "43214",

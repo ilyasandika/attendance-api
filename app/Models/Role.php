@@ -13,4 +13,10 @@ class Role extends Model
         "name",
         "description"
     ];
+
+
+    public function profiles()
+    {
+        return $this->hasMany(UserProfile::class);
+    }
 }

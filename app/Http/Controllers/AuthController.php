@@ -29,7 +29,7 @@ class AuthController extends Controller
                     "message" => "BAD REQUEST",
                     "errors" => $user["errors"]
                 ],
-                Response::HTTP_CREATED
+                Response::HTTP_BAD_REQUEST
             );
         }
 

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,4 +24,6 @@ use App\Http\Controllers\AuthController;
 Route::get("/", function () {
     return "Hello World";
 });
-Route::post('/user', [AuthController::class, 'register']);
+
+Route::post('/users', [AuthController::class, 'register']);
+Route::get('/users', [UserController::class, 'index']);
