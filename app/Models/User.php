@@ -25,4 +25,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserProfile::class, "user_id", "id");
     }
+
+    public function schedule()
+    {
+        return $this->hasOne(Schedule::class, "user_id", "id");
+    }
 }

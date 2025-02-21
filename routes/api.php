@@ -27,3 +27,4 @@ Route::get("/", function () {
 
 Route::post('/users', [AuthController::class, 'register']);
 Route::get('/users', [UserController::class, 'index']);
+Route::get('/users/{id}', [UserController::class, 'show']);
