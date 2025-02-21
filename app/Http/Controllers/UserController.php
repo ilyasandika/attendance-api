@@ -61,4 +61,27 @@ class UserController extends Controller
             ]
         );
     }
+
+    public function update(Request $request)
+    {
+        $result = $this->userService->updateById($request);
+        if (!$result['status']) {
+            return response()->json(
+                [
+                    "statusCode" => Response::HTTP_NOT_FOUND,
+                    "message" => "NOT FOUND",
+                    "errors" => $result['errors']
+                ],
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+        return response()->json(
+            [
+                "statusCode" => Response::HTTP_OK,
+                "message" => "SUCCESS",
+                "data" => $result['data']
+            ]
+        );
+    }
 }

@@ -1,20 +1,18 @@
-#!/bin/bash
-curl -X POST "http://localhost:8000/api/users" \
-     -H "Content-Type: application/json" \
-     -d '{
-            "employeeId": "43214",
-            "employeeName": "Ilyas Andika",
-            "employeeGender": "male",
-            "employeeBirthDate": 1740101809,
-            "employeePhoneNumber": "08123456789",
-            "employeeEmail": "andikailyas02@gmail.com",
-            "employeeRoleId": "1",
-            "employeeDepartmentId": "1",
-            "employeeShiftId": "1",
-            "employeeWorkLocationId": "1",
-            "employeePassword": "password123",
-            "employeeWhatsApp": "08123456789",
-            "employeeLinkedin": "iaika",
-            "employeeTelegram": "08123456789",
-            "employeeBiography": "string"
-            }'
+curl --location --request PUT 'http://localhost:8000/api/users/1' \
+--form 'employeeId=99' \
+--form 'employeeName=Update Ilyas' \
+--form 'employeeGender=male' \
+--form 'employeeBirthDate=31414141' \
+--form 'employeePhoneNumber=12345678' \
+--form 'employeeEmail=testupdate@gmail.com' \
+--form 'employeeRoleId=1' \
+--form 'employeeDepartmentId=1' \
+--form 'employeeShiftId=1' \
+--form 'employeeWorkLocationId=1' \
+--form 'employeePassword=updatepassword' \
+--form 'employeeWhatsApp=1231312' \
+--form 'employeeLinkedin=iaika' \
+--form 'employeeTelegram=32131312' \
+--form 'employeeBiography=bio' \
+--form 'accountStatus=1' \
+--form 'profilePhoto=@C:/Users/andik/OneDrive/Gambar/dwada.png'
