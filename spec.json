@@ -569,43 +569,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "employeeId": {
-                                        "type": "integer"
-                                    },
-                                    "employeeName": {
-                                        "type": "string"
-                                    },
-                                    "employeeGender": {
-                                        "type": "string"
-                                    },
-                                    "employeeBirthDate": {
-                                        "type": "integer",
-                                        "description": "timestamp"
-                                    },
-                                    "employeePhoneNumber": {
-                                        "type": "string"
-                                    },
-                                    "employeeEmail": {
-                                        "type": "string"
-                                    },
-                                    "employeeRole": {
-                                        "type": "string"
-                                    },
-                                    "employeeDepartment": {
-                                        "type": "string"
-                                    },
-                                    "employeeShift": {
-                                        "type": "string"
-                                    },
-                                    "employeeWorkLocation": {
-                                        "type": "string"
-                                    },
-                                    "employeePassword": {
-                                        "type": "string"
-                                    }
-                                }
+                                "$ref": "#/components/schemas/employeeRequest"
                             }
                         }
                     }
@@ -1360,16 +1324,16 @@
                     "employeeEmail": {
                         "type": "string"
                     },
-                    "employeeRole": {
+                    "employeeRoleId": {
                         "type": "string"
                     },
-                    "employeeDepartment": {
+                    "employeeDepartmentId": {
                         "type": "string"
                     },
-                    "employeeShift": {
+                    "employeeShiftId": {
                         "type": "string"
                     },
-                    "employeeWorkLocation": {
+                    "employeeWorkLocationId": {
                         "type": "string"
                     },
                     "employeePassword": {
