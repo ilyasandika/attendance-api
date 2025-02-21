@@ -28,4 +28,5 @@ Route::get("/", function () {
 Route::post('/users', [AuthController::class, 'register']);
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'show']);
-Route::post('/users/{id}', [UserController::class, 'update']);
+Route::put('/users/{id}', [UserController::class, 'update']); //update
+Route::delete('/users/{id}', [UserController::class, 'destroy']);

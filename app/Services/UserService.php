@@ -177,4 +177,42 @@ class UserService
             ];
         }
     }
+
+    public function deleteById(int $id)
+    {
+        $user = User::with('profile', 'schedule')->find($id);
+
+        if (!$user) {
+            return [
+                'status' => false,
+                'errors' => ["message" => "User not found"]
+            ];
+        }
+
+        DB::beginTransaction();
+        try {
+
+            if ($user->profile->profile_photo_path) {
+                Storage::disk('public')->delete($user->profile->profile_photo_path);
+            }
+
+            $user->profile->delete();
+            $user->schedule->delete();
+
+            $user->delete();
+
+            DB::commit();
+
+            return [
+                'status' => true,
+                'message' => "User deleted successfully"
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return [
+                'status' => false,
+                'errors' => ["message" => $e->getMessage()]
+            ];
+        }
+    }
 }
