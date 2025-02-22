@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helper;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\AuthService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
@@ -44,5 +48,18 @@ class AuthController extends Controller
             ],
             Response::HTTP_CREATED
         );
+    }
+
+    public function login(Request $request)
+    {
+        $result = $this->authService->login($request->all());
+
+        return (!$result['status']) ? Helper::responseError($result, "UNAUTHORIZED") : Helper::responseSuccess($result, "SUCCESS");
+    }
+
+    public function logout(Request $request)
+    {
+        $user = User::find(1);
+        $user->tokens()->delete();
     }
 }

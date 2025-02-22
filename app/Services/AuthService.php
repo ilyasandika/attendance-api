@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Schedule;
 use App\Models\User;
 use App\Models\UserProfile;
+use Illuminate\Database\Console\Migrations\StatusCommand;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -76,5 +78,39 @@ class AuthService
                 'errors' => ["message" => $e->getMessage()]
             ];
         }
+    }
+
+    public function login(array $data)
+    {
+        $validator = Validator::make($data, [
+            'employeeId' => 'required|string',
+            'password' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return [
+                "status" => false,
+                "errors" => $validator->errors()
+            ];
+        }
+
+        $user = User::where('employee_id', $data['employeeId'])->first();
+
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
+            return [
+                "status" => false,
+                "errors" => "UNAUTHORIZED"
+            ];
+        }
+
+        $token = $user->createToken('login_token')->plainTextToken;
+
+        return [
+            "status" => true,
+            "data" => [
+                "token" => $token,
+                "user" => $user
+            ]
+        ];
     }
 }
