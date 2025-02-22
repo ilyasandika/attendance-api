@@ -4,6 +4,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -227,6 +228,29 @@ class UserService
             ];
         });
 
+
+        if ($user) {
+            return [
+                'status' => true,
+                'data' => $user
+            ];
+        }
+
+        return [
+            'status' => false,
+            'errors' => ['message' => "user not found"]
+        ];
+    }
+
+    public function findOverview()
+    {
+        $user = UserProfile::with("department")->selectRaw('department_id, COUNT(*) as total_users')->groupBy('department_id')->get()->map(function ($user) {
+            return [
+                "departmentId" => $user->department_id,
+                "departmentName" => $user->department->name,
+                "totalUser" => $user->total_users
+            ];
+        });
 
         if ($user) {
             return [
