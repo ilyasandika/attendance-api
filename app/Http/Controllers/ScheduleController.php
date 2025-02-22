@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helper;
 use App\Services\ScheduleService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,26 +18,25 @@ class ScheduleController extends Controller
 
     public function showAllSchedules()
     {
-
         $result = $this->scheduleService->findAllSchedules();
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
 
-        if (!$result['status']) {
-            return response()->json(
-                [
-                    "statusCode" => Response::HTTP_NOT_FOUND,
-                    "message" => "NOT FOUND",
-                    "errors" => $result['errors']
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        }
+    public function UpdateSchedule(Request $request)
+    {
+        $result = $this->scheduleService->updateScheduleById($request->all(), $request->route('id'));
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
 
-        return response()->json(
-            [
-                "statusCode" => Response::HTTP_OK,
-                "message" => "SUCCESS",
-                "data" => [$result["data"]]
-            ]
-        );
+    public function createLocation(Request $request)
+    {
+        $result = $this->scheduleService->createLocation($request->all());
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
+
+    public function createShift(Request $request)
+    {
+        $result = $this->scheduleService->createShift($request->all());
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
     }
 }

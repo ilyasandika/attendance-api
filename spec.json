@@ -1414,12 +1414,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1428,12 +1434,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1442,12 +1454,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1456,12 +1474,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1470,12 +1494,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1484,12 +1514,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1498,12 +1534,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1526,12 +1568,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1540,12 +1588,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1554,12 +1608,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1568,12 +1628,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1582,12 +1648,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1596,12 +1668,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }
@@ -1610,12 +1688,18 @@
                         "type": "object",
                         "properties": {
                             "in": {
-                                "type": "string"
+                                "type": "integer"
                             },
                             "out": {
-                                "type": "string"
+                                "type": "integer"
                             },
-                            "break": {
+                            "breakStart": {
+                                "type": "integer"
+                            },
+                            "breakEnd": {
+                                "type": "integer"
+                            },
+                            "isOff": {
                                 "type": "boolean"
                             }
                         }

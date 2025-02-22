@@ -204,8 +204,8 @@ class UserService
         });
 
 
-        return Helper::returnIfNotFound($user, "user not found");
-        return Helper::returnSuccess($user);
+        if ($user)
+            return Helper::returnSuccess($user);
     }
 
     public function findOverview()

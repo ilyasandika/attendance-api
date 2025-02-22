@@ -38,3 +38,6 @@ Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
 
 Route::get('/schedules', [ScheduleController::class, 'showAllSchedules']);
+Route::post('/schedules/shift', [ScheduleController::class, 'createShift']);
+Route::post('/schedules/location', [ScheduleController::class, 'createLocation']);
+Route::put('/schedules/{id}', [ScheduleController::class, 'updateSchedule']);

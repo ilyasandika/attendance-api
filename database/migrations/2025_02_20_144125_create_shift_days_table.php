@@ -20,7 +20,7 @@ return new class extends Migration
             $table->time('break_start')->nullable();
             $table->time('break_end')->nullable();
             $table->boolean('is_off')->default(false);
-
+            $table->timestamps();
             $table->unique(['shift_id', 'name']);
         });
     }
