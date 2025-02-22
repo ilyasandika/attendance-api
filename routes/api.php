@@ -27,6 +27,7 @@ Route::get("/", function () {
 
 Route::post('/users', [AuthController::class, 'register']);
 Route::get('/users', [UserController::class, 'index']);
+Route::get('/users/recent', [UserController::class, 'showLatest']);
 Route::get('/users/{id}', [UserController::class, 'show']);
-Route::put('/users/{id}', [UserController::class, 'update']); //update
+Route::put('/users/{id}', [UserController::class, 'update']); //without photo
 Route::delete('/users/{id}', [UserController::class, 'destroy']);

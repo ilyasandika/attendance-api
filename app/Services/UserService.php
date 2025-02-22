@@ -215,4 +215,29 @@ class UserService
             ];
         }
     }
+
+    public function findLatest()
+    {
+        $user = User::with('profile')->latest()->take(5)->get()->map(function ($user) {
+            return [
+                "id" => $user->id,
+                "employeeId" => $user->employee_id,
+                "employeeName" => $user->profile->name,
+                "createdAt" => strtotime($user->created_at)
+            ];
+        });
+
+
+        if ($user) {
+            return [
+                'status' => true,
+                'data' => $user
+            ];
+        }
+
+        return [
+            'status' => false,
+            'errors' => ['message' => "user not found"]
+        ];
+    }
 }
