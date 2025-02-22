@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Helpers\Helper;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
@@ -30,17 +31,10 @@ class UserService
             ];
         });
 
-        if ($user) {
-            return [
-                'status' => true,
-                'data' => $user
-            ];
+        if (!$user) {
+            return Helper::returnIfNotFound($user, "user not found");
         }
-
-        return [
-            'status' => false,
-            'errors' => ['message' => "user not found"]
-        ];
+        return Helper::returnSuccess($user);
     }
 
     public function findById(int $id)
@@ -48,10 +42,7 @@ class UserService
         $user = User::with('schedule.shift', 'schedule.location', 'profile.role', 'profile.department')->find($id);
 
         if (!$user) {
-            return [
-                'status' => false,
-                'errors' => ['message' => "user not found"]
-            ];
+            return Helper::returnIfNotFound($user, "user not found");
         }
 
         $data = [
@@ -73,10 +64,7 @@ class UserService
             "accountStatus" => $user->status,
         ];
 
-        return [
-            'status' => true,
-            'data' => $data
-        ];
+        return Helper::returnSuccess($data);
     }
 
     public function updateById(Request $request)
@@ -115,16 +103,9 @@ class UserService
 
         $user = User::with('schedule.shift', 'schedule.location', 'profile.role', 'profile.department')->find($id);
 
-
         if (!$user) {
-            return [
-                'status' => false,
-                'errors' => ["message" => "user not found"]
-            ];
+            return Helper::returnIfNotFound($user, "user not found");
         }
-
-
-
         DB::beginTransaction();
         try {
             $user->id = $id;
@@ -166,10 +147,7 @@ class UserService
 
             DB::commit();
 
-            return [
-                'status' => true,
-                'data' => $user
-            ];
+            return Helper::returnSuccess($user);
         } catch (\Exception $e) {
             DB::rollBack();
             return [
@@ -204,10 +182,7 @@ class UserService
 
             DB::commit();
 
-            return [
-                'status' => true,
-                'message' => "User deleted successfully"
-            ];
+            return Helper::returnSuccess($user);
         } catch (\Exception $e) {
             DB::rollBack();
             return [
@@ -229,17 +204,8 @@ class UserService
         });
 
 
-        if ($user) {
-            return [
-                'status' => true,
-                'data' => $user
-            ];
-        }
-
-        return [
-            'status' => false,
-            'errors' => ['message' => "user not found"]
-        ];
+        return Helper::returnIfNotFound($user, "user not found");
+        return Helper::returnSuccess($user);
     }
 
     public function findOverview()
@@ -252,16 +218,9 @@ class UserService
             ];
         });
 
-        if ($user) {
-            return [
-                'status' => true,
-                'data' => $user
-            ];
+        if (!$user) {
+            return Helper::returnIfNotFound($user, "user not found");
         }
-
-        return [
-            'status' => false,
-            'errors' => ['message' => "user not found"]
-        ];
+        return Helper::returnSuccess($user);
     }
 }

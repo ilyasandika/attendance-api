@@ -3,7 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\UserController;
+use App\Models\Schedule;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,3 +34,7 @@ Route::get('/users/overview', [UserController::class, 'showOverview']);
 Route::get('/users/{id}', [UserController::class, 'show']);
 Route::put('/users/{id}', [UserController::class, 'update']); //without photo
 Route::delete('/users/{id}', [UserController::class, 'destroy']);
+
+
+
+Route::get('/schedules', [ScheduleController::class, 'showAllSchedules']);
