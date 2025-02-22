@@ -40,8 +40,8 @@ Route::delete('/users/{id}', [UserController::class, 'destroy']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-Route::get('/schedules', [ScheduleController::class, 'showScheduleList'])->middleware('auth:sanctum');
 
+Route::get('/schedules', [ScheduleController::class, 'showScheduleList'])->middleware('auth:sanctum');
 Route::get('/schedules/shifts/{id}', [ScheduleController::class, 'showShiftById']);
 Route::put('/schedules/shifts/{id}', [ScheduleController::class, 'updateShiftById']);
 Route::delete('/schedules/shifts/{id}', [ScheduleController::class, 'deleteShiftById']);
