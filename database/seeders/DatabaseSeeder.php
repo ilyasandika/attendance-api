@@ -22,7 +22,8 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             LocationSeeder::class,
             RoleSeeder::class,
-            ShiftSeeder::class
+            ShiftSeeder::class,
+            UserSeeder::class
         ]);
     }
 }

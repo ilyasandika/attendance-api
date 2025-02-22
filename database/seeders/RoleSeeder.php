@@ -15,7 +15,9 @@ class RoleSeeder extends Seeder
     {
         DB::table('roles')->insert([
             "name" => "Helpdesk Support",
-            "description" => "Helpdesk Support Junior"
+            "description" => "Helpdesk Support Junior",
+            "created_at" => now(),
+            "updated_at" => now()
         ]);
     }
 }

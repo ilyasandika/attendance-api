@@ -15,7 +15,9 @@ class DepartmentSeeder extends Seeder
     {
         DB::table('departments')->insert([
             "name" => "IT",
-            "description" => "Information Technology"
+            "description" => "Information Technology",
+            "created_at" => now(),
+            "updated_at" => now()
         ]);
     }
 }

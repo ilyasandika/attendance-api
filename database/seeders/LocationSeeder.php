@@ -18,7 +18,9 @@ class LocationSeeder extends Seeder
             "description" => "Main Office Mitra Integrasi Informatika",
             "latitude" => -6.1750985,
             "longtitude" => 106.7873879,
-            "radius" => 100
+            "radius" => 100,
+            "created_at" => now(),
+            "updated_at" => now()
         ]);
     }
 }

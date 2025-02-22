@@ -16,9 +16,9 @@ class ScheduleController extends Controller
         $this->scheduleService = $scheduleService;
     }
 
-    public function showAllSchedules()
+    public function showScheduleList()
     {
-        $result = $this->scheduleService->findAllSchedules();
+        $result = $this->scheduleService->getScheduleList();
         return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
     }
 
@@ -34,9 +34,58 @@ class ScheduleController extends Controller
         return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
     }
 
+    public function showLocationList(Request $request)
+    {
+        $result = $this->scheduleService->getLocationList();
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
+
+    public function showLocationById(Request $request)
+    {
+        $result = $this->scheduleService->getLocationById($request->route('id'));
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
+
+    public function updateLocationById(Request $request)
+    {
+        $result = $this->scheduleService->updateLocationById($request->all(), $request->route('id'));
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
+
+    public function deleteLocationById(Request $request)
+    {
+        $result = $this->scheduleService->deleteLocationById($request->route('id'));
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
+
+
     public function createShift(Request $request)
     {
         $result = $this->scheduleService->createShift($request->all());
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
+
+    public function showShiftList(Request $request)
+    {
+        $result = $this->scheduleService->getShiftList();
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
+
+    public function showShiftById(Request $request)
+    {
+        $result = $this->scheduleService->getShiftById($request->route('id'));
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
+
+    public function updateShiftById(Request $request)
+    {
+        $result = $this->scheduleService->updateShiftById($request->all(), $request->route('id'));
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
+
+    public function deleteShiftById(Request $request)
+    {
+        $result = $this->scheduleService->deleteShiftById($request->route('id'));
         return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
     }
 }

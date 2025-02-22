@@ -18,4 +18,9 @@ class Shift extends Model
     {
         return $this->hasMany(Schedule::class, "shift_id", "id");
     }
+
+    public function shiftDay()
+    {
+        return $this->hasMany(ShiftDay::class, "shift_id", "id");
+    }
 }

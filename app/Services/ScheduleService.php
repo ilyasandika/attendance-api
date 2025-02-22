@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ScheduleService
 {
-    public function findAllSchedules()
+    public function getScheduleList()
     {
         $schedule = Schedule::with('shift', 'location', 'user.profile', 'user.profile.department', 'user.profile.role')->get()->map(function ($schedule) {
             return [
@@ -26,7 +26,7 @@ class ScheduleService
             ];
         });
 
-        return ($schedule) ?  Helper::returnSuccess($schedule) : Helper::returnIfNotFound($schedule, "User not found");
+        return ($schedule) ?  Helper::returnSuccess($schedule) : Helper::returnIfNotFound($schedule, "schedule not found");
     }
 
     public function updateScheduleById(array $data, int $id)
@@ -89,6 +89,61 @@ class ScheduleService
         if (!$location) {
             return Helper::returnIfNotFound($location, "create location failed");
         }
+
+        return Helper::returnSuccess($location);
+    }
+
+    public function getLocationList()
+    {
+        $location = Location::get();
+        return ($location) ?  Helper::returnSuccess($location) : Helper::returnIfNotFound($location, "location not found");
+    }
+
+    public function getLocationById($id)
+    {
+        $location = location::find($id);
+        return ($location) ?  Helper::returnSuccess($location) : Helper::returnIfNotFound($location, "location not found");
+    }
+
+    public function updateLocationById(array $data, int $id)
+    {
+
+        $validator = Validator::make($data, [
+            "locationName" => "required|string",
+            "description" => "required|string",
+            "latitude" => "required|decimal:6",
+            "longtitude" => "required|decimal:6",
+            "radius" => "required|integer",
+            "address" => "required|string",
+        ]);
+
+        if ($validator->fails()) {
+            return [
+                "status" => false,
+                "errors" => $validator->errors()
+            ];
+        }
+
+        $location = location::find($id);
+        if (!$location) return Helper::returnIfNotFound($data, "location not found");
+
+        $location->name = $data["locationName"];
+        $location->description = $data["description"];
+        $location->latitude = $data["latitude"];
+        $location->longtitude = $data["longtitude"];
+        $location->radius = $data["radius"];
+        $location->address = $data["address"];
+        $location->save();
+
+        return Helper::returnSuccess($location);
+    }
+
+    public function deleteLocationById(int $id)
+    {
+        $location = Location::find($id);
+        if (!$location) return Helper::returnIfNotFound($location, "location not found");
+
+        $location->delete();
 
         return Helper::returnSuccess($location);
     }
@@ -213,5 +268,98 @@ class ScheduleService
         }
 
         return Helper::returnSuccess($location);
+    }
+
+    public function getShiftList()
+    {
+        $shift = Shift::with("shiftDay")->get();
+        return ($shift) ?  Helper::returnSuccess($shift) : Helper::returnIfNotFound($shift, "shift not found");
+    }
+
+    public function getShiftById(int $id)
+    {
+        $shift = Shift::with("shiftDay")->find($id);
+        return ($shift) ?  Helper::returnSuccess($shift) : Helper::returnIfNotFound($shift, "shift not found");
+    }
+
+
+
+    public function updateShiftById(array $data, int $id)
+    {
+
+        $validator = Validator::make($data, [
+            "shiftName" => "required|string",
+            "description" => "required|string",
+            "monday" => "required|array",
+            "tuesday" => "required|array",
+            "wednesday" => "required|array",
+            "thursday" => "required|array",
+            "friday" => "required|array",
+            "saturday" => "required|array",
+            "sunday" => "required|array",
+        ]);
+
+        if ($validator->fails()) {
+            return [
+                'status' => false,
+                'errors' => $validator->errors()
+            ];
+        }
+
+        $shift = Shift::with("shiftDay")->find($id);
+
+
+        if (!$shift) {
+            return Helper::returnIfNotFound($shift, "shift not found");
+        }
+
+        DB::beginTransaction();
+        try {
+
+            $shift->name = $data['shiftName'];
+            $shift->description = $data['description'];
+            $shift->save();
+
+            $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+            foreach ($days as $day) {
+                $shiftDay = ShiftDay::where('name', $day)->where('shift_id', $id)->first();
+                if ($shiftDay) {
+                    $shiftDay->update([
+                        'check_in' => $data[$day]["in"],
+                        'check_out' => $data[$day]["out"],
+                        'break_start' => $data[$day]["breakStart"],
+                        'break_end' => $data[$day]["breakEnd"],
+                        'is_off' => $data[$day]["isOff"]
+                    ]);
+                }
+            }
+
+
+            DB::commit();
+
+            return Helper::returnSuccess($data);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return [
+                'status' => false,
+                'errors' => ["message" => $e->getMessage()]
+            ];
+        }
+
+
+        if (!$location) {
+            return Helper::returnIfNotFound($location, "create location failed");
+        }
+
+        return Helper::returnSuccess($location);
+    }
+
+    public function deleteShiftById(int $id)
+    {
+        $shift = Shift::with("shiftDay")->find($id);
+        $shift->delete();
+        return ($shift) ?  Helper::returnSuccess($shift) : Helper::returnIfNotFound($shift, "shift not found");
     }
 }

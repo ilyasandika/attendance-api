@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("name")->unique();
             $table->string("description")->nullable();
+            $table->string("address")->nullable();
             $table->double("latitude");
             $table->double("longtitude");
             $table->integer("radius");
