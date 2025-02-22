@@ -108,7 +108,7 @@ class UserController extends Controller
         );
     }
 
-    public function showLatest(Request $request)
+    public function showLatest()
     {
         $result = $this->userService->findLatest();
         if (!$result['status']) {
