@@ -17,7 +17,7 @@ class LocationSeeder extends Seeder
             "name" => "Head Office MII",
             "description" => "Main Office Mitra Integrasi Informatika",
             "latitude" => -6.1750985,
-            "longtitude" => 106.7873879,
+            "longitude" => 106.7873879,
             "radius" => 100,
             "created_at" => now(),
             "updated_at" => now()

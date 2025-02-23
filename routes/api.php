@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -46,9 +47,12 @@ Route::get('/schedules/shifts/{id}', [ScheduleController::class, 'showShiftById'
 Route::put('/schedules/shifts/{id}', [ScheduleController::class, 'updateShiftById']);
 Route::delete('/schedules/shifts/{id}', [ScheduleController::class, 'deleteShiftById']);
 Route::post('/schedules/shifts', [ScheduleController::class, 'createShift']);
+Route::get('/schedules/shifts', [ScheduleController::class, 'showShiftList']);
 Route::get('/schedules/locations', [ScheduleController::class, 'showLocationList']);
 Route::get('/schedules/locations/{id}', [ScheduleController::class, 'showLocationById']);
 Route::post('/schedules/locations', [ScheduleController::class, 'createLocation']);
 Route::put('/schedules/locations/{id}', [ScheduleController::class, 'updateLocationById']);
 Route::delete('/schedules/locations/{id}', [ScheduleController::class, 'deleteLocationById']);
 Route::put('/schedules/{id}', [ScheduleController::class, 'updateSchedule']);
+
+Route::post('/check', [AttendanceController::class, 'checkIn'])->middleware('auth:sanctum');

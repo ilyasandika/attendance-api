@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string("description")->nullable();
             $table->string("address")->nullable();
             $table->double("latitude");
-            $table->double("longtitude");
+            $table->double("longitude");
             $table->integer("radius");
             $table->timestamps();
         });

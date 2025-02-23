@@ -47,4 +47,25 @@ class Helper
             ]
         );
     }
+
+    public static function isWithinRadius(float $userLat, float $userLng, float $targetLat, float $targetLng, int $radius)
+    {
+        $earthRadius = 6371000; // dalam meter
+
+        // Konversi latitude dan longitude ke radian
+        $latFrom = deg2rad($userLat);
+        $lngFrom = deg2rad($userLng);
+        $latTo = deg2rad($targetLat);
+        $lngTo = deg2rad($targetLng);
+
+        // Haversine formula
+        $latDelta = $latTo - $latFrom;
+        $lngDelta = $lngTo - $lngFrom;
+
+        $a = sin($latDelta / 2) ** 2 + cos($latFrom) * cos($latTo) * sin($lngDelta / 2) ** 2;
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        $distance = $earthRadius * $c; // Hasil dalam meter
+
+        return $distance <= $radius; // true jika dalam radius, false jika di luar
+    }
 }

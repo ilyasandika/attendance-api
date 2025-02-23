@@ -63,8 +63,8 @@ class ScheduleService
 
         $validator = Validator::make($data, [
             "locationName" => "required|string",
-            "latitude" => "required|decimal:6",
-            "longtitude" => "required|decimal:6",
+            "latitude" => "required|decimal:7",
+            "longtitude" => "required|decimal:7",
             "radius" => "required|integer",
             "address" => "required|string",
             "description" => "required|string",
@@ -111,8 +111,8 @@ class ScheduleService
         $validator = Validator::make($data, [
             "locationName" => "required|string",
             "description" => "required|string",
-            "latitude" => "required|decimal:6",
-            "longtitude" => "required|decimal:6",
+            "latitude" => "required|decimal:7",
+            "longtitude" => "required|decimal:7",
             "radius" => "required|integer",
             "address" => "required|string",
         ]);
@@ -125,15 +125,17 @@ class ScheduleService
         }
 
         $location = location::find($id);
-        if (!$location) return Helper::returnIfNotFound($data, "location not found");
-
-        $location->name = $data["locationName"];
-        $location->description = $data["description"];
-        $location->latitude = $data["latitude"];
-        $location->longtitude = $data["longtitude"];
-        $location->radius = $data["radius"];
-        $location->address = $data["address"];
-        $location->save();
+        if ($location) {
+            $location->name = $data["locationName"];
+            $location->description = $data["description"];
+            $location->latitude = $data["latitude"];
+            $location->longtitude = $data["longtitude"];
+            $location->radius = $data["radius"];
+            $location->address = $data["address"];
+            $location->save();
+        } else {
+            return Helper::returnIfNotFound($location, "location not found");
+        }
 
         return Helper::returnSuccess($location);
     }

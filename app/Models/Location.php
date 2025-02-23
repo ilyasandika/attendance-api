@@ -13,7 +13,7 @@ class Location extends Model
         "name",
         "description",
         "latitude",
-        "longtitude",
+        "longitude",
         "radius",
     ];
 }
