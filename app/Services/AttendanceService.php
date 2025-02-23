@@ -137,4 +137,16 @@ class AttendanceService
             "data" => $attendance
         ]);
     }
+
+    public function getAttendanceById(int $id)
+    {
+        $attendance = Attendance::find($id);
+        return $attendance ? Helper::returnSuccess($attendance) : Helper::returnIfNotFound($attendance, "Attendance not found");
+    }
+
+    public function getAttendanceListByUserId(int $userId)
+    {
+        $attendance = Attendance::where("user_id", $userId)->get();
+        return $attendance ? Helper::returnSuccess($attendance) : Helper::returnIfNotFound($attendance, "Attendance not found");
+    }
 }

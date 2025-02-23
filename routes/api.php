@@ -36,11 +36,8 @@ Route::get('/users/{id}', [UserController::class, 'show']);
 Route::put('/users/{id}', [UserController::class, 'update']); //without photo
 Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
-
-
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-
 
 Route::get('/schedules', [ScheduleController::class, 'showScheduleList'])->middleware('auth:sanctum');
 Route::get('/schedules/shifts/{id}', [ScheduleController::class, 'showShiftById']);
@@ -55,4 +52,8 @@ Route::put('/schedules/locations/{id}', [ScheduleController::class, 'updateLocat
 Route::delete('/schedules/locations/{id}', [ScheduleController::class, 'deleteLocationById']);
 Route::put('/schedules/{id}', [ScheduleController::class, 'updateSchedule']);
 
-Route::post('/check', [AttendanceController::class, 'checkIn'])->middleware('auth:sanctum');
+Route::post('/attendances/check', [AttendanceController::class, 'checkIn'])->middleware('auth:sanctum');
+Route::get('/attendances', [AttendanceController::class, 'showAttendanceList'])->middleware('auth:sanctum');
+Route::get('/attendances/users', [AttendanceController::class, 'showAttendanceListByUserLogin'])->middleware('auth:sanctum');
+Route::get('/attendances/users/{id}', [AttendanceController::class, 'showAttendanceListByUserIdPath'])->middleware('auth:sanctum');
+Route::get('/attendances/{id}', [AttendanceController::class, 'showAttendanceById'])->middleware('auth:sanctum');
