@@ -13,13 +13,12 @@ class AttendanceService
 {
     public function getAttendanceList()
     {
-        $attendance = Attendance::paginate(10);
+        $attendance = Attendance::with('user.profile.role', "user.profile.department")->paginate(10);
         return $attendance ? Helper::returnSuccess($attendance) : Helper::returnIfNotFound($attendance, "Attendance not found");
     }
 
     public function createAttendance(Request $request, int $userId)
     {
-
         $validator = Validator::make($request->all(), [
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',

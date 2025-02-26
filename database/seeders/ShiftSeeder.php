@@ -14,84 +14,66 @@ class ShiftSeeder extends Seeder
      */
     public function run(): void
     {
-        $shift = Shift::create([
-            "name" => "5 Days",
-            "description" => "Normal 5 Days Working Hours",
-            "created_at" => now(),
-            "updated_at" => now()
-        ]);
-
-        $shift->ShiftDay()->createMany([
+        $shifts = [
             [
-                "name" => "monday",
-                "check_in" => "07:00:00",
-                "check_out" => "16:00:00",
-                "break_start" => "12:00:00",
-                "break_end" => "13:00:00",
-                "is_off" => 0,
-                "created_at" => now(),
-                "updated_at" => now(),
+                "name" => "5 Days",
+                "description" => "Normal 5 Days Working Hours",
+                "days" => [
+                    ["name" => "monday", "is_off" => 0],
+                    ["name" => "tuesday", "is_off" => 0],
+                    ["name" => "wednesday", "is_off" => 0],
+                    ["name" => "thursday", "is_off" => 0],
+                    ["name" => "friday", "is_off" => 0],
+                    ["name" => "saturday", "is_off" => 1],
+                    ["name" => "sunday", "is_off" => 1],
+                ]
             ],
             [
-                "name" => "tuesday",
-                "check_in" => "07:00:00",
-                "check_out" => "16:00:00",
-                "break_start" => "12:00:00",
-                "break_end" => "13:00:00",
-                "is_off" => 0,
-                "created_at" => now(),
-                "updated_at" => now(),
+                "name" => "6 Days",
+                "description" => "6 Days Work with Shorter Hours",
+                "days" => [
+                    ["name" => "monday", "is_off" => 0],
+                    ["name" => "tuesday", "is_off" => 0],
+                    ["name" => "wednesday", "is_off" => 0],
+                    ["name" => "thursday", "is_off" => 0],
+                    ["name" => "friday", "is_off" => 0],
+                    ["name" => "saturday", "is_off" => 0],
+                    ["name" => "sunday", "is_off" => 1],
+                ]
             ],
             [
-                "name" => "wednesday",
-                "check_in" => "07:00:00",
-                "check_out" => "16:00:00",
-                "break_start" => "12:00:00",
-                "break_end" => "13:00:00",
-                "is_off" => 0,
-                "created_at" => now(),
-                "updated_at" => now(),
-            ],
-            [
-                "name" => "thursday",
-                "check_in" => "07:00:00",
-                "check_out" => "16:00:00",
-                "break_start" => "12:00:00",
-                "break_end" => "13:00:00",
-                "is_off" => 0,
-                "created_at" => now(),
-                "updated_at" => now(),
-            ],
-            [
-                "name" => "friday",
-                "check_in" => "07:00:00",
-                "check_out" => "16:00:00",
-                "break_start" => "12:00:00",
-                "break_end" => "13:00:00",
-                "is_off" => 0,
-                "created_at" => now(),
-                "updated_at" => now(),
-            ],
-            [
-                "name" => "saturday",
-                "check_in" => "07:00:00",
-                "check_out" => "16:00:00",
-                "break_start" => "12:00:00",
-                "break_end" => "13:00:00",
-                "is_off" => 1,
-                "created_at" => now(),
-                "updated_at" => now(),
-            ],
-            [
-                "name" => "sunday",
-                "check_in" => "07:00:00",
-                "check_out" => "16:00:00",
-                "break_start" => "12:00:00",
-                "break_end" => "13:00:00",
-                "is_off" => 1,
-                "created_at" => now(),
-                "updated_at" => now(),
+                "name" => "Shift Night",
+                "description" => "Night Shift for IT Support",
+                "days" => [
+                    ["name" => "monday", "is_off" => 0],
+                    ["name" => "tuesday", "is_off" => 0],
+                    ["name" => "wednesday", "is_off" => 0],
+                    ["name" => "thursday", "is_off" => 0],
+                    ["name" => "friday", "is_off" => 0],
+                    ["name" => "saturday", "is_off" => 0],
+                    ["name" => "sunday", "is_off" => 0],
+                ]
             ]
-        ]);
+        ];
+
+        foreach ($shifts as $shiftData) {
+            $shift = Shift::create([
+                "name" => $shiftData["name"],
+                "description" => $shiftData["description"],
+                "created_at" => now(),
+                "updated_at" => now()
+            ]);
+
+            $shift->ShiftDay()->createMany(array_map(function ($day) {
+                return array_merge($day, [
+                    "check_in" => "07:00:00",
+                    "check_out" => "16:00:00",
+                    "break_start" => "12:00:00",
+                    "break_end" => "13:00:00",
+                    "created_at" => now(),
+                    "updated_at" => now(),
+                ]);
+            }, $shiftData["days"]));
+        }
     }
 }

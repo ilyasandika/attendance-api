@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Helper;
+use App\Models\Shift;
 use App\Services\ScheduleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -66,10 +67,19 @@ class ScheduleController extends Controller
         return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
     }
 
-    public function showShiftList(Request $request)
+    public function showShiftDetailList(Request $request)
     {
         $result = $this->scheduleService->getShiftList();
         return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+    }
+
+    public function showShiftList(Request $request)
+    {
+        return response()->json([
+            "status" => 200,
+            "message" => "SUCCESS",
+            "data" => Shift::get()
+        ]);
     }
 
     public function showShiftById(Request $request)

@@ -43,7 +43,7 @@ class Helper
             [
                 "statusCode" => Response::HTTP_OK,
                 "message" => $message,
-                "data" => [$data["data"]]
+                "data" => $data["data"]
             ]
         );
     }

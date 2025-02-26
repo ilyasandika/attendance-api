@@ -63,8 +63,8 @@ class ScheduleService
 
         $validator = Validator::make($data, [
             "locationName" => "required|string",
-            "latitude" => "required|decimal:7",
-            "longtitude" => "required|decimal:7",
+            "latitude" => "required|numeric",
+            "longitude" => "required|numeric",
             "radius" => "required|integer",
             "address" => "required|string",
             "description" => "required|string",
@@ -80,7 +80,7 @@ class ScheduleService
         $location = Location::create([
             "name" => $data['locationName'],
             "latitude" => $data['latitude'],
-            "longtitude" => $data['longtitude'],
+            "longitude" => $data['longitude'],
             "radius" => $data['radius'],
             "address" => $data['address'],
             "description" => $data['description']
@@ -111,8 +111,8 @@ class ScheduleService
         $validator = Validator::make($data, [
             "locationName" => "required|string",
             "description" => "required|string",
-            "latitude" => "required|decimal:7",
-            "longtitude" => "required|decimal:7",
+            "latitude" => "required|numeric",
+            "longitude" => "required|numeric",
             "radius" => "required|integer",
             "address" => "required|string",
         ]);
@@ -129,7 +129,7 @@ class ScheduleService
             $location->name = $data["locationName"];
             $location->description = $data["description"];
             $location->latitude = $data["latitude"];
-            $location->longtitude = $data["longtitude"];
+            $location->longitude = $data["longitude"];
             $location->radius = $data["radius"];
             $location->address = $data["address"];
             $location->save();
