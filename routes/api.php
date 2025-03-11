@@ -34,7 +34,6 @@ Route::get("/", function () {
     return "Hello World";
 });
 
-Route::get("/cobalagi", [CobaController::class, 'ambilUser']);
 
 Route::get('/server-time', function () {
     return response()->json([

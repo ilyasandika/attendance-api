@@ -9,6 +9,7 @@ use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,7 +17,6 @@ class UserService
 {
     public function findAll()
     {
-
         $user = User::with('profile.role', 'profile.department')->get()->map(function ($user) {
             return [
                 "id" => $user->id,
@@ -34,6 +34,7 @@ class UserService
         if (!$user) {
             return Helper::returnIfNotFound($user, "user not found");
         }
+
         return Helper::returnSuccess($user);
     }
 

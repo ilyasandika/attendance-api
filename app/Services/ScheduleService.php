@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\Helper;
+use App\Http\Resources\ShiftCollection;
 use App\Models\Location;
 use App\Models\Schedule;
 use App\Models\Shift;
@@ -274,7 +275,9 @@ class ScheduleService
 
     public function getShiftList()
     {
-        $shift = Shift::with("shiftDay")->get();
+        $shift = new ShiftCollection(Shift::with("shiftDay")->paginate(10));
+
+
         return ($shift) ?  Helper::returnSuccess($shift) : Helper::returnIfNotFound($shift, "shift not found");
     }
 

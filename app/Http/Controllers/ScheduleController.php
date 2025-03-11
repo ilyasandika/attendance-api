@@ -75,11 +75,8 @@ class ScheduleController extends Controller
 
     public function showShiftList(Request $request)
     {
-        return response()->json([
-            "status" => 200,
-            "message" => "SUCCESS",
-            "data" => Shift::get()
-        ]);
+        $result = $this->scheduleService->getShiftList();
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
     }
 
     public function showShiftById(Request $request)
