@@ -17,6 +17,7 @@ class LocationSeeder extends Seeder
             [
                 "name" => "Head Office MII",
                 "description" => "Main Office Mitra Integrasi Informatika",
+                "address" => "Jl. Indonesia Merdeka",
                 "latitude" => -6.1750985,
                 "longitude" => 106.7873879,
                 "radius" => 100,
@@ -26,6 +27,7 @@ class LocationSeeder extends Seeder
             [
                 "name" => "Branch Office Jakarta",
                 "description" => "Jakarta Branch Office",
+                "address" => "Jl. Indonesia Jaya",
                 "latitude" => -6.200000,
                 "longitude" => 106.816666,
                 "radius" => 150,
@@ -35,6 +37,7 @@ class LocationSeeder extends Seeder
             [
                 "name" => "Branch Office Bandung",
                 "description" => "Bandung Branch Office",
+                "address" => "Jl. Indonesia Harapan Bangsa",
                 "latitude" => -6.914744,
                 "longitude" => 107.609810,
                 "radius" => 120,
@@ -44,6 +47,7 @@ class LocationSeeder extends Seeder
             [
                 "name" => "Branch Office Surabaya",
                 "description" => "Surabaya Branch Office",
+                "address" => "Jl. Indonesia Pasti Menang",
                 "latitude" => -7.257472,
                 "longitude" => 112.752090,
                 "radius" => 130,
@@ -53,6 +57,7 @@ class LocationSeeder extends Seeder
             [
                 "name" => "Branch Office Medan",
                 "description" => "Medan Branch Office",
+                "address" => "Jl. Indonesia Pasti Hantam",
                 "latitude" => 3.595196,
                 "longitude" => 98.672223,
                 "radius" => 140,

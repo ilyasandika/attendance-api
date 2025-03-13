@@ -54,7 +54,7 @@ class AuthController extends Controller
     {
         $result = $this->authService->login($request->all());
 
-        return (!$result['status']) ? Helper::responseError($result, "UNAUTHORIZED") : Helper::responseSuccess($result, "SUCCESS");
+        return (!$result['status']) ? Helper::responseError($result["data"], "UNAUTHORIZED") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 
     public function logout(Request $request)

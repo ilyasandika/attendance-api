@@ -4,32 +4,31 @@
 namespace App\Services;
 
 use App\Helpers\Helper;
+use App\Http\Resources\UserCollection;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class UserService
 {
-    public function findAll()
+    public function findAll($search)
     {
-        $user = User::with('profile.role', 'profile.department')->get()->map(function ($user) {
-            return [
-                "id" => $user->id,
-                "profile_id" => $user->profile->id,
-                "employeeId" => $user->employee_id,
-                "employeeEmail" => $user->email,
-                "employeeName" => $user->profile->name,
-                "employeeRole" => $user->profile->role->name,
-                "employeeDepartment" => $user->profile->department->name,
-                "dateCreated" => strtotime($user->created_at),
-                "accountStatus" => $user->status,
-            ];
-        });
+
+        $query = User::query();
+
+        if ($search) {
+            $query->where("employee_id", "like", "%{$search}%")
+                ->orWhere("email", "like", "%{$search}%")
+                ->orWhereHas("profile", function ($query) use ($search) {
+                    $query->where("name", "like", "%{$search}%");
+                });
+        }
+
+        $user = new UserCollection($query->with("profile")->paginate(10));
 
         if (!$user) {
             return Helper::returnIfNotFound($user, "user not found");

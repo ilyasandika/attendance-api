@@ -14,13 +14,12 @@ class ShiftCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-
         return [
             'data' => $this->collection->map(function ($shift) {
                 return [
-                    'shiftId' => $shift['id'],
-                    'shiftName' => $shift['name'],
-                    'description' => $shift['description'],
+                    'shiftId' => $shift->id,
+                    'shiftName' => $shift->name,
+                    'description' => $shift->description,
                     'monday' => $this->formatDay($shift->shiftDay, "monday"),
                     'tuesday' => $this->formatDay($shift->shiftDay, "tuesday"),
                     'wednesday' => $this->formatDay($shift->shiftDay, "wednesday"),

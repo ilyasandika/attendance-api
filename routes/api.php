@@ -53,7 +53,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/recent', [UserController::class, 'showLatest']);
     Route::get('/users/overview', [UserController::class, 'showOverview']);
-    Route::get('/users/profile', [UserController::class, 'showUserByUserLogin']);
+    Route::get('/users/current', [UserController::class, 'showUserByUserLogin']);
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::put('/users/{id}', [UserController::class, 'update']); //without photo
     Route::delete('/users/{id}', [UserController::class, 'destroy']);

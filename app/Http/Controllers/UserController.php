@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helper;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
+
 
 class UserController extends Controller
 {
@@ -16,165 +17,45 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $result = $this->userService->findAll();
-
-        if (!$result['status']) {
-            return response()->json(
-                [
-                    "statusCode" => Response::HTTP_NO_CONTENT,
-                    "message" => "NO CONTENT",
-                    "errors" => $result['errors']
-                ],
-                Response::HTTP_NO_CONTENT
-            );
-        }
-
-        return response()->json(
-            [
-                "statusCode" => Response::HTTP_OK,
-                "message" => "SUCCESS",
-                "data" => $result['data']
-            ]
-        );
+        $result = $this->userService->findAll($request->query("search"));
+        return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 
     public function show(Request $request)
     {
         $result = $this->userService->findById($request->route('id'));
-        if (!$result['status']) {
-            return response()->json(
-                [
-                    "statusCode" => Response::HTTP_NOT_FOUND,
-                    "message" => "NOT FOUND",
-                    "errors" => $result['errors']
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
-        return response()->json(
-            [
-                "statusCode" => Response::HTTP_OK,
-                "message" => "SUCCESS",
-                "data" => $result['data']
-            ]
-        );
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
     }
 
     public function showUserByUserLogin(Request $request)
     {
         $result = $this->userService->findById(Auth::user()->id);
-        if (!$result['status']) {
-            return response()->json(
-                [
-                    "statusCode" => Response::HTTP_NOT_FOUND,
-                    "message" => "NOT FOUND",
-                    "errors" => $result['errors']
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
-        return response()->json(
-            [
-                "statusCode" => Response::HTTP_OK,
-                "message" => "SUCCESS",
-                "data" => $result['data']
-            ]
-        );
+        return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 
     public function update(Request $request)
     {
         $result = $this->userService->updateById($request);
-        if (!$result['status']) {
-            return response()->json(
-                [
-                    "statusCode" => Response::HTTP_NOT_FOUND,
-                    "message" => "NOT FOUND",
-                    "errors" => $result['errors']
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
-        return response()->json(
-            [
-                "statusCode" => Response::HTTP_OK,
-                "message" => "SUCCESS",
-                "data" => $result['data']
-            ]
-        );
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
     }
 
     public function destroy(Request $request)
     {
         $result = $this->userService->deleteById($request->route('id'));
-        if (!$result['status']) {
-            return response()->json(
-                [
-                    "statusCode" => Response::HTTP_NOT_FOUND,
-                    "message" => "NOT FOUND",
-                    "errors" => $result['errors']
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
-        return response()->json(
-            [
-                "statusCode" => Response::HTTP_OK,
-                "message" => "SUCCESS",
-                "data" => []
-            ]
-        );
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
     }
 
     public function showLatest()
     {
         $result = $this->userService->findLatest();
-        if (!$result['status']) {
-            return response()->json(
-                [
-                    "statusCode" => Response::HTTP_NOT_FOUND,
-                    "message" => "NOT FOUND",
-                    "errors" => $result['errors']
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
-        return response()->json(
-            [
-                "statusCode" => Response::HTTP_OK,
-                "message" => "SUCCESS",
-                "data" => [$result["data"]]
-            ]
-        );
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
     }
 
     public function showOverview()
     {
         $result = $this->userService->findOverview();
-        if (!$result['status']) {
-            return response()->json(
-                [
-                    "statusCode" => Response::HTTP_NOT_FOUND,
-                    "message" => "NOT FOUND",
-                    "errors" => $result['errors']
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
-        return response()->json(
-            [
-                "statusCode" => Response::HTTP_OK,
-                "message" => "SUCCESS",
-                "data" => $result["data"]
-            ]
-        );
+        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
     }
 }

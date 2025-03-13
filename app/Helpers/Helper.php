@@ -39,13 +39,14 @@ class Helper
 
     public static function responseSuccess($data, $message)
     {
-        return response()->json(
-            [
-                "statusCode" => Response::HTTP_OK,
-                "message" => $message,
-                "data" => $data["data"]
-            ]
-        );
+
+        $a1 =  [
+            "statusCode" => Response::HTTP_OK,
+            "message" => $message,
+            "payload" => $data
+        ];
+
+        return response()->json($a1);
     }
 
     public static function isWithinRadius(float $userLat, float $userLng, float $targetLat, float $targetLng, int $radius)
