@@ -50,12 +50,12 @@ class UserController extends Controller
     public function showLatest()
     {
         $result = $this->userService->findLatest();
-        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+        return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 
     public function showOverview()
     {
         $result = $this->userService->findOverview();
-        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+        return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 }
