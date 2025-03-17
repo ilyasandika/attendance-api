@@ -58,18 +58,21 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/users/{id}', [UserController::class, 'update']); //without photo
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
-    Route::get('/schedules', [ScheduleController::class, 'showScheduleList']);
     Route::get('/schedules/shifts/details', [ScheduleController::class, 'showShiftDetailList']);
     Route::get('/schedules/shifts/{id}', [ScheduleController::class, 'showShiftById']);
     Route::put('/schedules/shifts/{id}', [ScheduleController::class, 'updateShiftById']);
     Route::delete('/schedules/shifts/{id}', [ScheduleController::class, 'deleteShiftById']);
     Route::post('/schedules/shifts', [ScheduleController::class, 'createShift']);
     Route::get('/schedules/shifts', [ScheduleController::class, 'showShiftList']);
+
     Route::get('/schedules/locations', [ScheduleController::class, 'showLocationList']);
-    Route::get('/schedules/locations/{id}', [ScheduleController::class, 'showLocationById']);
+    Route::get('/schedules/locations/all', [ScheduleController::class, 'showLocationNameList']);
     Route::post('/schedules/locations', [ScheduleController::class, 'createLocation']);
+    Route::get('/schedules/locations/{id}', [ScheduleController::class, 'showLocationById']);
     Route::put('/schedules/locations/{id}', [ScheduleController::class, 'updateLocationById']);
     Route::delete('/schedules/locations/{id}', [ScheduleController::class, 'deleteLocationById']);
+
+    Route::get('/schedules', [ScheduleController::class, 'showScheduleList']);
     Route::put('/schedules/{id}', [ScheduleController::class, 'updateSchedule']);
 
     Route::post('/attendances/check', [AttendanceController::class, 'checkIn']);

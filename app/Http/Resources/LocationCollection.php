@@ -12,18 +12,20 @@ class LocationCollection extends ResourceCollection
      *
      * @return array<int|string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray(Request $request)
     {
         return [
-            "data" => $this->collection->map(function ($schedule) {
+            "data" => $this->collection->map(function ($location) {
                 return [
-                    "schedulesId" => $schedule->id,
-                    "employeeId" => $schedule->user->employee_id,
-                    "employeeName" => $schedule->user->profile->name,
-                    "employeeRole" => $schedule->user->profile->role->name,
-                    "employeeDepartment" => $schedule->user->profile->department->name,
-                    "employeeShift" => $schedule->shift->name,
-                    "employeeWorkLocation" => $schedule->location->name
+                    "id" => $location->id,
+                    "name" => $location->name,
+                    "description" => $location->description,
+                    "address" => $location->address,
+                    "latitude" => $location->latitude,
+                    "longitude" => $location->longitude,
+                    "radius" => $location->radius,
+                    "createdAt" => $location->created_at,
+                    "updatedAt" => $location->updated_at
                 ];
             }),
             'meta' => [

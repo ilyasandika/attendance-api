@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Helpers\Helper;
 use App\Http\Resources\LocationCollection;
+use App\Http\Resources\ScheduleCollection;
 use App\Http\Resources\ShiftCollection;
 use App\Models\Location;
 use App\Models\Schedule;
@@ -16,7 +17,7 @@ class ScheduleService
 {
     public function getScheduleList()
     {
-        $schedule = new LocationCollection(Schedule::with('shift', 'location', 'user.profile', 'user.profile.department', 'user.profile.role')->paginate(10));
+        $schedule = new ScheduleCollection(Schedule::with('shift', 'location', 'user.profile', 'user.profile.department', 'user.profile.role')->paginate(10));
 
         return ($schedule) ?  Helper::returnSuccess($schedule) : Helper::returnIfNotFound($schedule, "schedule not found");
     }
@@ -85,11 +86,23 @@ class ScheduleService
         return Helper::returnSuccess($location);
     }
 
-    public function getLocationList()
+    public function getLocationList(bool $isAll = false)
     {
-        $location = Location::get();
-        return ($location) ?  Helper::returnSuccess($location) : Helper::returnIfNotFound($location, "location not found");
+
+        if ($isAll) {
+            $locations = Location::get()->map(function ($location) {
+                return [
+                    "id" => $location->id,
+                    "name" => $location->name,
+                ];
+            });
+        } else {
+            $locations = new LocationCollection(Location::paginate(10));
+        }
+        return ($locations) ?  Helper::returnSuccess($locations) : Helper::returnIfNotFound($locations, "location not found");
     }
+
+    public function getLocationName() {}
 
     public function getLocationById($id)
     {
