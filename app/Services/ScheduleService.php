@@ -277,12 +277,20 @@ class ScheduleService
         return Helper::returnSuccess($location);
     }
 
-    public function getShiftList()
+    public function getShiftList(bool $isAll = false)
     {
-        $shift = new ShiftCollection(Shift::with("shiftDay")->paginate(10));
+        if ($isAll) {
+            $shifts = Shift::get()->map(function ($shift) {
+                return [
+                    "id" => $shift->id,
+                    "name" => $shift->name
+                ];
+            });
+        } else {
+            $shifts = new ShiftCollection(Shift::with("shiftDay")->paginate(10));
+        }
 
-
-        return ($shift) ?  Helper::returnSuccess($shift) : Helper::returnIfNotFound($shift, "shift not found");
+        return ($shifts) ?  Helper::returnSuccess($shifts) : Helper::returnIfNotFound($shifts, "shift not found");
     }
 
     public function getShiftById(int $id)

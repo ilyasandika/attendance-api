@@ -59,6 +59,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
     Route::get('/schedules/shifts/details', [ScheduleController::class, 'showShiftDetailList']);
+    Route::get('/schedules/shifts/all', [ScheduleController::class, 'showShiftNameList']);
     Route::get('/schedules/shifts/{id}', [ScheduleController::class, 'showShiftById']);
     Route::put('/schedules/shifts/{id}', [ScheduleController::class, 'updateShiftById']);
     Route::delete('/schedules/shifts/{id}', [ScheduleController::class, 'deleteShiftById']);
@@ -80,7 +81,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/attendances/users', [AttendanceController::class, 'showAttendanceListByUserLogin']);
     Route::get('/attendances/users/{id}', [AttendanceController::class, 'showAttendanceListByUserIdPath']);
     Route::get('/attendances/{id}', [AttendanceController::class, 'showAttendanceById']);
-
 
     Route::get('/departments', [DepartmentController::class, 'getDepartmentList']);
     Route::get('/roles', [RoleController::class, 'getRoleList']);
