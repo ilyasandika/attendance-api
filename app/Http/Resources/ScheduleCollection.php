@@ -27,8 +27,8 @@ class ScheduleCollection extends ResourceCollection
                 ];
             }),
             'meta' => [
-                'current_page' => $this->currentPage(),
-                'last_page' => $this->lastPage(),
+                'currentPage' => $this->currentPage(),
+                'lastPage' => $this->lastPage(),
                 'total' => $this->total(),
             ],
         ];

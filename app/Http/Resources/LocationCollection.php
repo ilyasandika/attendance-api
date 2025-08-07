@@ -24,13 +24,15 @@ class LocationCollection extends ResourceCollection
                     "latitude" => $location->latitude,
                     "longitude" => $location->longitude,
                     "radius" => $location->radius,
+                    "default" => $location->default,
                     "createdAt" => $location->created_at,
-                    "updatedAt" => $location->updated_at
+                    "updatedAt" => $location->updated_at,
+                    "isUsed" => $location->schedule()->exists(),
                 ];
             }),
             'meta' => [
-                'current_page' => $this->currentPage(),
-                'last_page' => $this->lastPage(),
+                'currentPage' => $this->currentPage(),
+                'lastPage' => $this->lastPage(),
                 'total' => $this->total(),
             ],
         ];

@@ -2,6 +2,10 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -23,8 +27,57 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
+        $this->reportable(function (Throwable $exception) {
             //
         });
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof ValidationException) {
+            return response()->json([
+                'success' => false,
+                'message' => __('errorMessages.validation_error'),
+                'errors' => $exception->errors(),
+            ], 422);
+        }
+
+        if ($exception instanceof AuthenticationException) {
+
+            return response()->json([
+                'success' => false,
+                'message' => __('errorMessages.unauthorized'),
+                'errors' => [$exception->getMessage()],
+            ], 401);
+        }
+
+        if ($exception instanceof AuthorizationException) {
+            return response()->json([
+                'success' => false,
+                'message' => __('errorMessages.forbidden'),
+                'errors' => [$exception->getMessage()],
+            ], 403);
+        }
+
+        if ($exception instanceof NotFoundHttpException) {
+            return response()->json([
+                'success' => false,
+                'message' => __('errorMessages.not_found'),
+                'errors' => [$exception->getMessage()],
+            ], 404);
+        }
+
+        if ($exception instanceof FieldInUseException) {
+            return response()->json([
+                'success' => false,
+                'message' => __('errorMessages.field_in_use'),
+                'errors' => [$exception->getMessage()],
+            ], 409);
+        }
+        return response()->json([
+            'success' => false,
+            'message' => __('errorMessages.server_error'),
+            'errors' => [$exception->getMessage()],
+        ], 500);
     }
 }

@@ -1,18 +1,17 @@
 <?php
 
 use App\Http\Controllers\AttendanceController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CobaController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\UserController;
-use App\Models\Department;
-use App\Models\Role;
-use App\Models\Schedule;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,59 +28,112 @@ use Illuminate\Support\Carbon;
 //     return $request->user();
 // });
 
-
-Route::get("/", function () {
-    return "Hello World";
-});
-
-
-Route::get('/server-time', function () {
-    return response()->json([
-        'day' => Carbon::now()->translatedFormat('l'), // Nama hari dalam bahasa lokal
-        'datetime' => Carbon::now()->toDateTimeString(), // Format Y-m-d H:i:s
-    ]);
-});
+// Route umum (tanpa login)
+Route::get('/', fn() => 'Hello World');
+Route::get('/server-time', fn() => response()->json([
+    'day' => Carbon::now()->translatedFormat('l'),
+    'datetime' => Carbon::now()->toDateTimeString(),
+]));
 
 
 Route::post('/login', [AuthController::class, 'login']);
+// Route yang butuh login
+Route::middleware('auth:sanctum')->group(function () {
 
-
-Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/logout', [AuthController::class, 'logout']);
 
-    Route::post('/users', [AuthController::class, 'register']);
-    Route::get('/users', [UserController::class, 'index']);
-    Route::get('/users/recent', [UserController::class, 'showLatest']);
-    Route::get('/users/overview', [UserController::class, 'showOverview']);
-    Route::get('/users/current', [UserController::class, 'showUserByUserLogin']);
-    Route::get('/users/{id}', [UserController::class, 'show']);
-    Route::put('/users/{id}', [UserController::class, 'update']); //without photo
-    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    // =================== ADMIN ONLY ===================
+    Route::middleware('role:admin')->group(function () {
+        // User Management
+        Route::post('/users', [AuthController::class, 'register']);
+        Route::get('/users', [UserController::class, 'index']);
+        Route::get('/users/recent', [UserController::class, 'showLatest']);
+        Route::get('/users/department', [UserController::class, 'overviewByDepartment']);
+        Route::delete('/users/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+');
 
-    Route::get('/schedules/shifts/details', [ScheduleController::class, 'showShiftDetailList']);
-    Route::get('/schedules/shifts/all', [ScheduleController::class, 'showShiftNameList']);
-    Route::get('/schedules/shifts/{id}', [ScheduleController::class, 'showShiftById']);
-    Route::put('/schedules/shifts/{id}', [ScheduleController::class, 'updateShiftById']);
-    Route::delete('/schedules/shifts/{id}', [ScheduleController::class, 'deleteShiftById']);
-    Route::post('/schedules/shifts', [ScheduleController::class, 'createShift']);
-    Route::get('/schedules/shifts', [ScheduleController::class, 'showShiftList']);
+        // Shift Management
+        Route::get('/schedules/shifts', [ScheduleController::class, 'showShiftList']);
+        Route::post('/schedules/shifts', [ScheduleController::class, 'createShift']);
+        Route::put('/schedules/shifts/{id}', [ScheduleController::class, 'updateShiftById'])->where('id', '[0-9]+');
+        Route::delete('/schedules/shifts/{id}', [ScheduleController::class, 'deleteShiftById'])->where('id', '[0-9]+');
 
-    Route::get('/schedules/locations', [ScheduleController::class, 'showLocationList']);
-    Route::get('/schedules/locations/all', [ScheduleController::class, 'showLocationNameList']);
-    Route::post('/schedules/locations', [ScheduleController::class, 'createLocation']);
-    Route::get('/schedules/locations/{id}', [ScheduleController::class, 'showLocationById']);
-    Route::put('/schedules/locations/{id}', [ScheduleController::class, 'updateLocationById']);
-    Route::delete('/schedules/locations/{id}', [ScheduleController::class, 'deleteLocationById']);
+        Route::get('/shifts', [ShiftController::class, 'getShifts']);
+        Route::post('/shifts', [ShiftController::class, 'createShift']);
+        Route::put('/shifts/{id}', [ShiftController::class, 'updateShiftById'])->where('id', '[0-9]+');
+        Route::delete('/shifts/{id}', [ShiftController::class, 'deleteShiftById'])->where('id', '[0-9]+');
 
-    Route::get('/schedules', [ScheduleController::class, 'showScheduleList']);
-    Route::put('/schedules/{id}', [ScheduleController::class, 'updateSchedule']);
+        // Location Management
+        Route::get('/locations', [LocationController::class, 'getLocations']);
+        Route::post('/locations', [LocationController::class, 'createLocation']);
+        Route::get('/locations/{id}', [LocationController::class, 'getLocationById'])->where('id', '[0-9]+');
+        Route::put('/locations/{id}', [LocationController::class, 'updateLocationById'])->where('id', '[0-9]+');
+        Route::delete('/locations/{id}', [LocationController::class, 'deleteLocationById'])->where('id', '[0-9]+');
 
-    Route::post('/attendances/check', [AttendanceController::class, 'checkIn']);
-    Route::get('/attendances', [AttendanceController::class, 'showAttendanceList']);
-    Route::get('/attendances/users', [AttendanceController::class, 'showAttendanceListByUserLogin']);
-    Route::get('/attendances/users/{id}', [AttendanceController::class, 'showAttendanceListByUserIdPath']);
-    Route::get('/attendances/{id}', [AttendanceController::class, 'showAttendanceById']);
+        // Holiday Management
+        Route::post('/schedules/holidays', [HolidayController::class, 'createHoliday']);
+        Route::put('/schedules/holidays/{id}', [HolidayController::class, 'updateHolidayById'])->where('id', '[0-9]+');
+        Route::delete('/schedules/holidays/{id}', [HolidayController::class, 'deleteHolidayById'])->where('id', '[0-9]+');
 
-    Route::get('/departments', [DepartmentController::class, 'getDepartmentList']);
-    Route::get('/roles', [RoleController::class, 'getRoleList']);
+        // Schedule update
+        Route::get('/schedules', [ScheduleController::class, 'showScheduleList']);
+        Route::put('/schedules/{id}', [ScheduleController::class, 'updateSchedule'])->where('id', '[0-9]+');
+        Route::get('/attendances/users/{id}', [AttendanceController::class, 'showAttendanceListByUserIdPath'])->where('id', '[0-9]+');
+
+        // Department
+        Route::get('/departments', [DepartmentController::class, 'getDepartmentList']);
+        Route::post('/departments', [DepartmentController::class, 'createDepartment']);
+        Route::delete('/departments/{id}', [DepartmentController::class, 'deleteDepartment'])->where('id', '[0-9]+');
+        Route::put('/departments/{id}', [DepartmentController::class, 'updateDepartment'])->where('id', '[0-9]+');
+        Route::get('/departments/{id}', [DepartmentController::class, 'getDepartmentById'])->where('id', '[0-9]+');
+
+        Route::post('/roles', [RoleController::class, 'createRole']);
+        Route::delete('/roles/{id}', [RoleController::class, 'deleteRoleById'])->where('id', '[0-9]+');
+        Route::put('/roles/{id}', [RoleController::class, 'updateRoleById'])->where('id', '[0-9]+');
+        Route::get('/roles/{id}', [RoleController::class, 'getRoleById'])->where('id', '[0-9]+');
+
+
+        //attendance
+        Route::get('/attendances', [AttendanceController::class, 'showAttendanceList']);
+
+        // Force Absen
+
+    });
+
+    // ============== SHARED (admin + employee) ==============
+    Route::middleware('role:admin,employee')->group(function () {
+        // View own profile
+        Route::get('/users/current', [UserController::class, 'showUserByUserLogin']);
+        Route::post('/users/edit', [UserController::class, 'updateUserByLogin']);
+        Route::post('/users/{id}', [UserController::class, 'updateUserById']); // update self
+
+        // Attendance
+        Route::get('/attendances/force', [AttendanceController::class, 'forceCheck']);
+        Route::post('/attendances/check', [AttendanceController::class, 'checkIn']);
+        Route::get('/attendances/users', [AttendanceController::class, 'showAttendanceListByUserLogin']);
+        Route::get('/attendances/{id}', [AttendanceController::class, 'showAttendanceById']);
+
+        // View data
+        Route::get('/users/{id}', [UserController::class, 'show']);
+        Route::get('/schedules/shifts/all', [ScheduleController::class, 'showShiftNameList']);
+        Route::get('/schedules/shifts/{id}', [ScheduleController::class, 'showShiftById'])->where('id', '[0-9]+');
+        Route::get('/shifts/{id}', [ShiftController::class, 'getShiftById'])->where('id', '[0-9]+');
+        Route::get('/shifts/all', [ShiftController::class, 'getShiftDropdown']);
+
+        Route::get('/schedules/shifts/details', [ScheduleController::class, 'showShiftDetailList']);
+        Route::get('/schedules/locations/all', [ScheduleController::class, 'showLocationNameList']);
+        Route::get('/locations/all', [LocationController::class, 'getLocationDropdown']);
+        Route::get('/schedules/locations/{id}', [ScheduleController::class, 'showLocationById'])->where('id', '[0-9]+');
+        Route::get('/schedules/holidays', [HolidayController::class, 'showHolidayList']);
+        Route::get('/schedules/holidays/{id}', [HolidayController::class, 'showHolidayById']);
+        Route::get('/departments/all', [DepartmentController::class, 'getDepartmentDropdown']);
+        Route::get('/roles', [RoleController::class, 'getRoleList']);
+        Route::get('/roles/all', [RoleController::class, 'geRoleDropdown']);;
+
+        //auth
+        Route::get('/logout', [AuthController::class, 'logout']);
+
+    });
 });
+
+
+

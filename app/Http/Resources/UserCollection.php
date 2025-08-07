@@ -20,12 +20,12 @@ class UserCollection extends ResourceCollection
                     "id" => $user->id,
                     "profileId" => $user->profile->id,
                     "employeeId" => $user->employee_id,
-                    "employeeEmail" => $user->email,
-                    "employeeName" => $user->profile->name,
-                    "employeeRole" => $user->profile->role->name,
-                    "employeeDepartment" => $user->profile->department->name,
+                    "email" => $user->email,
+                    "name" => $user->profile->name,
+                    "role" => $user->profile->role->name,
+                    "department" => $user->profile->department->name,
                     "dateCreated" => strtotime($user->created_at),
-                    "accountStatus" => $user->status,
+                    "status" => $user->status,
                 ];
             }),
             'meta' => [

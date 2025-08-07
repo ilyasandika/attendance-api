@@ -11,9 +11,26 @@ class Shift extends Model
 
     protected $fillable = [
         "name",
-        "description"
+        "description",
+        "default"
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($shift) {
+            if ($shift->default) {
+                static::where('default', true)->update(['default' => false]);
+            }
+        });
+
+        static::updating(function ($shift) {
+            if ($shift->default) {
+                static::where('default', true)
+                    ->where('id', '!=', $shift->id)
+                    ->update(['default' => false]);
+            }
+        });
+    }
     public function schedule()
     {
         return $this->hasMany(Schedule::class, "shift_id", "id");

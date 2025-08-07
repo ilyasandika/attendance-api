@@ -23,9 +23,9 @@ return new class extends Migration
             $table->string('linkedin')->nullable();
             $table->text('biography')->nullable();
             $table->unsignedBigInteger('birth_date')->nullable();
+            $table->unsignedBigInteger('start_date')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->string('profile_picture_path')->nullable();
-
             $table->timestamps();
         });
     }

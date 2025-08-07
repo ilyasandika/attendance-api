@@ -37,4 +37,22 @@ class User extends Authenticatable
     {
         return $this->hasOne(Schedule::class, "user_id", "id");
     }
+
+    const ROLE_ADMIN = 'admin';
+    const ROLE_EMPLOYEE = 'employee';
+
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function isEmployee(): bool
+    {
+        return $this->role === self::ROLE_EMPLOYEE;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 1;
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Helper;
+use App\Http\Requests\User\UpdateUserRequest;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,7 +27,7 @@ class UserController extends Controller
     public function show(Request $request)
     {
         $result = $this->userService->findById($request->route('id'));
-        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+        return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 
     public function showUserByUserLogin(Request $request)
@@ -35,10 +36,17 @@ class UserController extends Controller
         return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 
-    public function update(Request $request)
+    public function updateUserById(UpdateUserRequest $request)
     {
-        $result = $this->userService->updateById($request);
-        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+        $data = $request->validated();
+        $data = $this->userService->updateById($request, $data, $data['id']);
+        return Helper::responseSuccessTry($data, __('successMessages.user_update_success'), 204);
+    }
+
+    public function updateUserByLogin (UpdateUserRequest $request){
+        $data = $request->validated();
+        $data = $this->userService->updateById($request, $data, (int)Auth::user()->id);
+        return Helper::responseSuccessTry($data, __('successMessages.user_update_success'), 204);
     }
 
     public function destroy(Request $request)
@@ -53,9 +61,9 @@ class UserController extends Controller
         return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 
-    public function showOverview()
+    public function overviewByDepartment()
     {
-        $result = $this->userService->findOverview();
+        $result = $this->userService->overviewByDepartment();
         return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 }

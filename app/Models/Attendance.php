@@ -11,19 +11,25 @@ class Attendance extends Model
 
     protected $fillable = [
         'user_id',
+        'schedule_id',
         'date',
         'check_in_time',
         'check_out_time',
-        'photo_check_in',
-        'photo_check_out',
-        'latitude_check_in',
-        'longitude_check_in',
-        'latitude_check_out',
-        'longitude_check_out',
-        'schedules_id',
-        'status',
-        'checkin_outside_location',
-        'checkout_outside_location',
+        'check_in_photo',
+        'check_out_photo',
+        'check_in_latitude',
+        'check_in_longitude',
+        'check_out_latitude',
+        'check_out_longitude',
+        'check_in_address',
+        'check_out_address',
+        'check_in_status',
+        'check_out_status',
+        'check_in_outside_location',
+        'check_out_outside_location',
+        'check_in_comment',
+        'check_out_comment',
+        'auto_checkout',
     ];
 
     public function user()
@@ -33,6 +39,6 @@ class Attendance extends Model
 
     public function schedule()
     {
-        return $this->belongsTo(Schedule::class, 'schedules_id');
+        return $this->belongsTo(Schedule::class, 'schedule_id');
     }
 }

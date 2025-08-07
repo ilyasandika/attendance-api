@@ -16,7 +16,7 @@ class ShiftDay extends Model
         "check_out",
         "break_start",
         "break_end",
-        "is_off"
+        "is_on"
     ];
 
     public function shift()

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->time('check_out')->nullable();
             $table->time('break_start')->nullable();
             $table->time('break_end')->nullable();
-            $table->boolean('is_off')->default(false);
+            $table->boolean('is_on')->default(true);
             $table->timestamps();
             $table->unique(['shift_id', 'name']);
         });

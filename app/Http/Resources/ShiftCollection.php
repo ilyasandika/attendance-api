@@ -18,8 +18,10 @@ class ShiftCollection extends ResourceCollection
             'data' => $this->collection->map(function ($shift) {
                 return [
                     'shiftId' => $shift->id,
-                    'shiftName' => $shift->name,
+                    'name' => $shift->name,
                     'description' => $shift->description,
+                    'default' => $shift->default,
+                    'isUsed' => $shift->schedule()->exists(),
                     'monday' => $this->formatDay($shift->shiftDay, "monday"),
                     'tuesday' => $this->formatDay($shift->shiftDay, "tuesday"),
                     'wednesday' => $this->formatDay($shift->shiftDay, "wednesday"),
@@ -30,8 +32,8 @@ class ShiftCollection extends ResourceCollection
                 ];
             }),
             'meta' => [
-                'current_page' => $this->currentPage(),
-                'last_page' => $this->lastPage(),
+                'currentPage' => $this->currentPage(),
+                'lastPage' => $this->lastPage(),
                 'total' => $this->total(),
             ],
         ];
@@ -47,7 +49,7 @@ class ShiftCollection extends ResourceCollection
                     'out' => $col['check_out'] ?? 0,
                     'breakStart' => $col['break_start'] ?? 0,
                     'breakEnd' => $col['break_end'] ?? 0,
-                    'isOff' => $col['is_off'] ?? true,
+                    'isOn' => $col['is_on'] ?? true,
                 ];
             }
         }

@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+
+class RoleCollection extends ResourceCollection
+{
+    /**
+     * Transform the resource collection into an array.
+     *
+     * @return array<int|string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'data' => $this->collection->map(function ($role) {
+                return [
+                    'roleId'   => $role->id,
+                    'name'           => $role->name,
+                    'description'    => $role->description,
+                    'default'    => $role->default,
+                    "isUsed" => $role->profiles()->exists(),
+                ];
+            }),
+            'meta' => [
+                'currentPage' => $this->currentPage(),
+                'lastPage'    => $this->lastPage(),
+                'total'       => $this->total(),
+            ],
+        ];
+    }
+}

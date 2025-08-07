@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Helpers\Helper;
 use App\Http\Resources\LocationCollection;
+use App\Http\Resources\LocationResource;
 use App\Http\Resources\ScheduleCollection;
 use App\Http\Resources\ShiftCollection;
+use App\Http\Resources\ShiftResource;
 use App\Models\Location;
 use App\Models\Schedule;
 use App\Models\Shift;
@@ -15,10 +17,29 @@ use Illuminate\Support\Facades\Validator;
 
 class ScheduleService
 {
-    public function getScheduleList()
+    public function getScheduleList($search = null)
     {
-        $schedule = new ScheduleCollection(Schedule::with('shift', 'location', 'user.profile', 'user.profile.department', 'user.profile.role')->paginate(10));
+        $query = Schedule::with([
+            'shift',
+            'location',
+            'user.profile',
+            'user.profile.department',
+            'user.profile.role'
+        ]);
 
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('user.profile', function ($q2) use ($search) {
+                    $q2->where('name', 'like', "%{$search}%");
+                })->orWhereHas('shift', function ($q2) use ($search) {
+                    $q2->where('name', 'like', "%{$search}%");
+                })->orWhereHas('location', function ($q2) use ($search) {
+                    $q2->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $schedule = new ScheduleCollection($query->paginate(10));
         return ($schedule) ?  Helper::returnSuccess($schedule) : Helper::returnIfNotFound($schedule, "schedule not found");
     }
 
@@ -61,6 +82,7 @@ class ScheduleService
             "radius" => "required|integer",
             "address" => "required|string",
             "description" => "required|string",
+            "default" => "required|boolean"
         ]);
 
         if ($validator->fails()) {
@@ -76,7 +98,8 @@ class ScheduleService
             "longitude" => $data['longitude'],
             "radius" => $data['radius'],
             "address" => $data['address'],
-            "description" => $data['description']
+            "description" => $data['description'],
+            "default" => $data['default']
         ]);
 
         if (!$location) {
@@ -86,7 +109,7 @@ class ScheduleService
         return Helper::returnSuccess($location);
     }
 
-    public function getLocationList(bool $isAll = false)
+    public function getLocationList(bool $isAll = false, $search = null)
     {
 
         if ($isAll) {
@@ -94,10 +117,15 @@ class ScheduleService
                 return [
                     "id" => $location->id,
                     "name" => $location->name,
+                    "default" => $location->default,
                 ];
             });
         } else {
-            $locations = new LocationCollection(Location::paginate(10));
+            $query = Location::query();
+            if ($search) {
+                $query->where("name", "like", "%{$search}%");
+            }
+            $locations = new LocationCollection($query->paginate(10));
         }
         return ($locations) ?  Helper::returnSuccess($locations) : Helper::returnIfNotFound($locations, "location not found");
     }
@@ -107,7 +135,7 @@ class ScheduleService
     public function getLocationById($id)
     {
         $location = location::find($id);
-        return ($location) ?  Helper::returnSuccess($location) : Helper::returnIfNotFound($location, "location not found");
+        return ($location) ?  Helper::returnSuccess(new LocationResource($location)) : Helper::returnIfNotFound($location, "location not found");
     }
 
     public function updateLocationById(array $data, int $id)
@@ -120,6 +148,7 @@ class ScheduleService
             "longitude" => "required|numeric",
             "radius" => "required|integer",
             "address" => "required|string",
+            "status" => "boolean"
         ]);
 
         if ($validator->fails()) {
@@ -137,6 +166,7 @@ class ScheduleService
             $location->longitude = $data["longitude"];
             $location->radius = $data["radius"];
             $location->address = $data["address"];
+            $location->default = $data["default"] ?? false;
             $location->save();
         } else {
             return Helper::returnIfNotFound($location, "location not found");
@@ -148,13 +178,22 @@ class ScheduleService
     public function deleteLocationById(int $id)
     {
         $location = Location::find($id);
-        if (!$location) return Helper::returnIfNotFound($location, "location not found");
+        if (!$location) {
+            return Helper::returnIfNotFound($location, "Location not found");
+        }
+
+        // Cek apakah location sedang dipakai di schedules
+        if ($location->schedules()->exists()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Cannot delete this location because it is assigned to a schedule.',
+            ], 400);
+        }
 
         $location->delete();
 
         return Helper::returnSuccess($location);
     }
-
 
     public function createShift(array $data)
     {
@@ -194,7 +233,7 @@ class ScheduleService
                 "check_out" => $data['monday']["out"],
                 "break_start" => $data['monday']["breakStart"],
                 "break_end" => $data['monday']["breakEnd"],
-                "is_off" => $data['monday']["isOff"],
+                "is_on" => $data['monday']["isOn"],
             ]);
 
             ShiftDay::create([
@@ -204,7 +243,7 @@ class ScheduleService
                 "check_out" => $data['tuesday']["out"],
                 "break_start" => $data['tuesday']["breakStart"],
                 "break_end" => $data['tuesday']["breakEnd"],
-                "is_off" => $data['tuesday']["isOff"],
+                "is_on" => $data['tuesday']["isOn"],
             ]);
 
             ShiftDay::create([
@@ -214,7 +253,7 @@ class ScheduleService
                 "check_out" => $data['wednesday']["out"],
                 "break_start" => $data['wednesday']["breakStart"],
                 "break_end" => $data['wednesday']["breakEnd"],
-                "is_off" => $data['wednesday']["isOff"],
+                "is_on" => $data['wednesday']["isOn"],
             ]);
 
             ShiftDay::create([
@@ -224,7 +263,7 @@ class ScheduleService
                 "check_out" => $data['thursday']["out"],
                 "break_start" => $data['thursday']["breakStart"],
                 "break_end" => $data['thursday']["breakEnd"],
-                "is_off" => $data['thursday']["isOff"],
+                "is_on" => $data['thursday']["isOn"],
             ]);
 
             ShiftDay::create([
@@ -234,7 +273,7 @@ class ScheduleService
                 "check_out" => $data['friday']["out"],
                 "break_start" => $data['friday']["breakStart"],
                 "break_end" => $data['friday']["breakEnd"],
-                "is_off" => $data['friday']["isOff"],
+                "is_on" => $data['friday']["isOn"],
             ]);
 
             ShiftDay::create([
@@ -244,7 +283,7 @@ class ScheduleService
                 "check_out" => $data['saturday']["out"],
                 "break_start" => $data['saturday']["breakStart"],
                 "break_end" => $data['saturday']["breakEnd"],
-                "is_off" => $data['saturday']["isOff"],
+                "is_on" => $data['saturday']["isOn"],
             ]);
 
             ShiftDay::create([
@@ -254,7 +293,7 @@ class ScheduleService
                 "check_out" => $data['sunday']["out"],
                 "break_start" => $data['sunday']["breakStart"],
                 "break_end" => $data['sunday']["breakEnd"],
-                "is_off" => $data['sunday']["isOff"],
+                "is_on" => $data['sunday']["isOn"],
             ]);
 
             DB::commit();
@@ -268,26 +307,24 @@ class ScheduleService
                 'errors' => ["message" => $e->getMessage()]
             ];
         }
-
-
-        if (!$location) {
-            return Helper::returnIfNotFound($location, "create location failed");
-        }
-
-        return Helper::returnSuccess($location);
     }
 
-    public function getShiftList(bool $isAll = false)
+    public function getShiftList(bool $isAll = false, $search = null)
     {
         if ($isAll) {
             $shifts = Shift::get()->map(function ($shift) {
                 return [
                     "id" => $shift->id,
-                    "name" => $shift->name
+                    "name" => $shift->name,
+                    "default" => $shift->default,
                 ];
             });
         } else {
-            $shifts = new ShiftCollection(Shift::with("shiftDay")->paginate(10));
+            $query = Shift::query();
+            if ($search) {
+                $query->where("name", "like", "%{$search}%");
+            }
+            $shifts = new ShiftCollection($query->with("shiftDay")->paginate(10));
         }
 
         return ($shifts) ?  Helper::returnSuccess($shifts) : Helper::returnIfNotFound($shifts, "shift not found");
@@ -296,7 +333,7 @@ class ScheduleService
     public function getShiftById(int $id)
     {
         $shift = Shift::with("shiftDay")->find($id);
-        return ($shift) ?  Helper::returnSuccess($shift) : Helper::returnIfNotFound($shift, "shift not found");
+        return ($shift) ?  Helper::returnSuccess(new ShiftResource($shift)) : Helper::returnIfNotFound($shift, "shift not found");
     }
 
 
@@ -335,6 +372,7 @@ class ScheduleService
 
             $shift->name = $data['shiftName'];
             $shift->description = $data['description'];
+            $shift->default = $data['default'];
             $shift->save();
 
             $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -347,7 +385,7 @@ class ScheduleService
                         'check_out' => $data[$day]["out"],
                         'break_start' => $data[$day]["breakStart"],
                         'break_end' => $data[$day]["breakEnd"],
-                        'is_off' => $data[$day]["isOff"]
+                        'is_on' => $data[$day]["isOn"]
                     ]);
                 }
             }

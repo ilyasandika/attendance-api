@@ -20,6 +20,7 @@ class UserProfile extends Model
         'linkedin',
         'biography',
         'birth_date',
+        'start_date',
         'gender',
         'profile_picture_path',
     ];

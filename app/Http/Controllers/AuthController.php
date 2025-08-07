@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Helper;
+use App\Http\Requests\User\LoginRequest;
+use App\Http\Requests\User\RegisterUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\AuthService;
@@ -21,51 +23,24 @@ class AuthController extends Controller
     }
 
 
-    public function register(Request $request)
+    public function register(RegisterUserRequest $request)
     {
-        $user = $this->authService->register($request->all());
-
-
-        if (!$user["status"] ?? null) {
-            return response()->json(
-                [
-                    "statusCode" => Response::HTTP_BAD_REQUEST,
-                    "message" => "BAD REQUEST",
-                    "errors" => $user["errors"]
-                ],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
-
-        return response()->json(
-            [
-                "statusCode" => Response::HTTP_CREATED,
-                "message" => "SUCCESS",
-                "data" => [
-                    "employeeId" => $user['data']['user']['employee_id'],
-                    "employeeName" => $user['data']['userProfile']['name'],
-                ]
-            ],
-            Response::HTTP_CREATED
-        );
+        $data = $request->validated();
+        $data = $this->authService->register($data);
+        return Helper::responseSuccessTry($data, __('successMessages.register_success'), 201);
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $result = $this->authService->login($request->all());
-
-        return (!$result['status']) ? Helper::responseError($result["data"], "UNAUTHORIZED") : Helper::responseSuccess($result["data"], "SUCCESS");
+        $data = $request->validated();
+        $data = $this->authService->login($data);
+        return Helper::responseSuccessTry($data, __('successMessages.login_success'), 200);
     }
 
     public function logout(Request $request)
     {
-        $id = Auth::user()->id;
-        $user = User::find($id);
-        $user->tokens()->delete();
-
-        return [
-            "statusCode" => 200,
-            "message" => "SUCCESS Log out"
-        ];
+        $result = $this->authService->logout($request);
+        return (!$result['status']) ? Helper::responseError($result["errors"], "UNAUTHORIZED") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
+
 }

@@ -2,6 +2,9 @@
 
 namespace App\Helpers;
 
+use App\Models\Holiday;
+use App\Models\User;
+use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\Response;
 
 class Helper
@@ -11,7 +14,8 @@ class Helper
         if (!$data) {
             return [
                 'status' => false,
-                'errors' => ["message" => $message]
+//                'errors' => ["message" => $message]
+                'errors' => is_array($message) ? $message : [$message]
             ];
         }
     }
@@ -25,13 +29,14 @@ class Helper
     }
 
 
-    public static function responseError($data, $message)
+    public static function responseError($errors, $message)
     {
         return response()->json(
             [
                 "statusCode" => Response::HTTP_NOT_FOUND,
                 "message" => $message,
-                "errors" => $data['errors']
+//                "errors" => $errors
+                 "errors" => is_array($errors) ? $errors : [$errors]
             ],
             Response::HTTP_NOT_FOUND
         );
@@ -48,6 +53,16 @@ class Helper
 
         return response()->json($a1);
     }
+
+    public static function responseSuccessTry($data = null, string $message = 'Berhasil.', int $statusCode = 200)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'payload' => $data,
+        ], $statusCode);
+    }
+
 
     public static function isWithinRadius(float $userLat, float $userLng, float $targetLat, float $targetLng, int $radius)
     {
@@ -68,5 +83,25 @@ class Helper
         $distance = $earthRadius * $c; // Hasil dalam meter
 
         return $distance <= $radius; // true jika dalam radius, false jika di luar
+    }
+
+    public static function isOff($userId = null): bool
+    {
+        $today = Carbon::today();
+        $dayName = strtolower($today->format('l'));
+
+        if (Holiday::whereDate('date', $today)->exists()) {
+            return true;
+        }
+
+        $user = User::with('schedule.shift.shiftDay')->find($userId);
+
+        if (!$user || !$user->schedule || !$user->schedule->shift) {
+            return true;
+        }
+
+        $shiftDay = $user->schedule->shift->shiftDay->firstWhere('name', $dayName);
+
+        return !$shiftDay || !$shiftDay->is_on;
     }
 }

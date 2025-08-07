@@ -21,27 +21,34 @@ class AttendanceController extends Controller
         $result = $this->attendanceService->createAttendance($request, Auth::user()->id);
         return (!$result['status']) ? Helper::responseError($result, "UNAUTHORIZED") : Helper::responseSuccess($result, "SUCCESS");
     }
+    public function forceCheck(Request $request)
+    {
+        $result = $this->attendanceService->forceCheckoutAll();
+        return (!$result['status']) ? Helper::responseError($result, "UNAUTHORIZED") : Helper::responseSuccess($result, "SUCCESS");
+    }
 
     public function showAttendanceList(Request $request)
     {
-        $result = $this->attendanceService->getAttendanceList();
-        return (!$result['status']) ? Helper::responseError($result, "UNAUTHORIZED") : Helper::responseSuccess($result, "SUCCESS");
+        $result = $this->attendanceService->getAttendanceList($request->query('search'));
+
+        return (!$result['status']) ? Helper::responseError($result["data"], "UNAUTHORIZED") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
     public function showAttendanceById(Request $request)
     {
         $result = $this->attendanceService->getAttendanceById($request->route('id'));
-        return (!$result['status']) ? Helper::responseError($result, "UNAUTHORIZED") : Helper::responseSuccess($result, "SUCCESS");
+        return (!$result['status']) ? Helper::responseError($result["data"], "UNAUTHORIZED") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 
     public function showAttendanceListByUserIdPath(Request $request)
     {
         $result = $this->attendanceService->getAttendanceListByUserId($request->route('id'));
-        return (!$result['status']) ? Helper::responseError($result, "UNAUTHORIZED") : Helper::responseSuccess($result, "SUCCESS");
+        return (!$result['status']) ? Helper::responseError($result["data"], "UNAUTHORIZED") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 
     public function showAttendanceListByUserLogin(Request $request)
     {
-        $result = $this->attendanceService->getAttendanceListByUserId(Auth::user()->id);
-        return (!$result['status']) ? Helper::responseError($result, "UNAUTHORIZED") : Helper::responseSuccess($result, "SUCCESS");
+        $result = $this->attendanceService->getAttendanceListByUserId(Auth::user()->id, $request->query('search'));
+
+        return (!$result['status']) ? Helper::responseError($result["data"], "UNAUTHORIZED") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 }

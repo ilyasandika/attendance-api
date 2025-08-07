@@ -19,6 +19,7 @@ return new class extends Migration
             $table->double("latitude");
             $table->double("longitude");
             $table->integer("radius");
+            $table->boolean("default")->default(false);
             $table->timestamps();
         });
     }

@@ -29,6 +29,7 @@ return new class extends Migration
             $table->boolean('checkin_outside_location')->default(false);
             $table->boolean('checkout_outside_location')->default(false);
             $table->unique(['user_id', 'date']);
+            $table->text('comment')->nullable();
             $table->timestamps();
         });
     }

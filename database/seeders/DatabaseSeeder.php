@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             RoleSeeder::class,
             ShiftSeeder::class,
-            UserSeeder::class
+            UserSeeder::class,
+            HolidaySeeder::class,
         ]);
     }
 }

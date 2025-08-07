@@ -5,6 +5,7 @@ namespace App\Services;
 
 use App\Helpers\Helper;
 use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
@@ -45,116 +46,68 @@ class UserService
             return Helper::returnIfNotFound($user, "user not found");
         }
 
-        $data = [
-            "id" => $user->id,
-            "employeeId" => $user->employee_id,
-            "employeeEmail" => $user->email,
-            "employeeName" => $user->profile->name,
-            "employeeGender" => $user->profile->gender,
-            "employeeBirthDate" => strtotime($user->profile->birth_date),
-            "employeePhoneNumber" => $user->profile->phone_number,
-            "employeeRole" => $user->profile->role->name,
-            "employeeDepartment" => $user->profile->department->name,
-            "employeeShift" => $user->schedule->shift->name,
-            "employeeWorkLocation" => $user->schedule->location->name,
-            "employeeWhatsApp" => $user->profile->whatsapp,
-            "employeeLinkedin" => $user->profile->linkedin,
-            "employeeTelegram" => $user->profile->telegram,
-            "employeeBiography" => $user->profile->Biography,
-            "accountStatus" => $user->status,
-        ];
 
-        return Helper::returnSuccess($data);
+        return Helper::returnSuccess(new UserResource($user));
     }
 
-    public function updateById(Request $request)
+    public function updateById(Request $request, array $data, int $id)
     {
-        $id = $request->route("id");
-        $data = $request->all();
-        $data['id'] = $id;
-
-        $validator = Validator::make($data, [
-            'id' => 'required|integer',
-            'employeeId' => 'required|string',
-            'employeeName' => 'required|string|max:255',
-            'employeeGender' => 'required|string|in:male,female',
-            'employeeBirthDate' => 'required|integer',
-            'employeePhoneNumber' => 'required|string|max:15',
-            'employeeEmail' => 'required|string|email|max:255',
-            'employeeRoleId' => 'required|integer',
-            'employeeDepartmentId' => 'required|integer',
-            'employeeShiftId' => 'required|integer',
-            'employeeWorkLocationId' => 'required|integer',
-            'employeePassword' => 'string|min:6',
-            'employeeWhatsApp' => 'string',
-            'employeeLinkedin' => 'string',
-            'employeeTelegram' => 'string',
-            'employeeBiography' => 'string',
-            'accountStatus' => 'required|boolean',
-            'profilePhoto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
-        ]);
-
-        if ($validator->fails()) {
-            return [
-                'status' => false,
-                'errors' => $validator->errors()
-            ];
-        }
-
         $user = User::with('schedule.shift', 'schedule.location', 'profile.role', 'profile.department')->find($id);
 
         if (!$user) {
             return Helper::returnIfNotFound($user, "user not found");
         }
-        DB::beginTransaction();
-        try {
+        DB::transaction(function () use ($request, $data, $user, $id) {
+            //Update User
             $user->id = $id;
-            $user->employee_id = $data["employeeId"];
-            $user->email = $data["employeeEmail"];
-            if ($data["employeePassword"]) {
-                $user->password = Hash::make($data["employeePassword"]);
+            $user->employee_id = $data['employeeId'];
+            $user->email = $data['email'];
+            $user->status = $data['status'];
+
+            if (!empty($data['password'])) {
+                $user->password = Hash::make($data['password']);
             }
-            $user->status = $data["accountStatus"];
+
             $user->save();
 
+            //Update Profile
             $user->profile->user_id = $id;
-            $user->profile->role_id = $data["employeeRoleId"];
-            $user->profile->department_id = $data["employeeDepartmentId"];
-            $user->profile->name = $data["employeeName"];
-            $user->profile->phone_number = $data["employeePhoneNumber"];
-            $user->profile->whatsapp = $data["employeeWhatsApp"];
-            $user->profile->linkedin = $data["employeeLinkedin"];
-            $user->profile->telegram = $data["employeeTelegram"];
-            $user->profile->biography = $data["employeeBiography"];
-            $user->profile->birth_date = $data["employeeBirthDate"];
-            $user->profile->gender = $data["employeeGender"];
+            $user->profile->role_id = $data['roleId'];
+            $user->profile->department_id = $data['departmentId'];
+            $user->profile->name = $data['name'];
+            $user->profile->phone_number = $data['phoneNumber'];
+            $user->profile->birth_date = $data['birthDate'];
+            $user->profile->gender = $data['gender'];
+            $user->profile->whatsapp = $data['whatsapp'] ?? null;
+            $user->profile->linkedin = $data['linkedin'] ?? null;
+            $user->profile->telegram = $data['telegram'] ?? null;
+            $user->profile->biography = $data['biography'] ?? null;
 
-            // if ($request->hasFile('profilePhoto')) {
-            //     $file = $request->file('profilePhoto');
-            //     $filename = $data['employee_id'] . '.' . $file->getClientOriginalExtension();
-            //     $path = $file->storeAs('profile', $filename, "public");
-            //     if ($user->profile->profile_photo_path) {
-            //         Storage::disk('public')->delete($user->profile->profile_photo_path);
-            //     }
-            //     $user->profile->profile_photo_path = $path;
-            // }
+            if ($request->hasFile('photo')) {
+                $file = $request->file('photo');
+                $filename = $data['employeeId'] . '_' . time() . '.' . $file->getClientOriginalExtension();
+
+                if (
+                    $user->profile->profile_picture_path &&
+                    Storage::disk('public')->exists($user->profile->profile_picture_path)
+                ) {
+                    Storage::disk('public')->delete($user->profile->profile_picture_path);
+                }
+
+                $path = $file->storeAs('profile', $filename, 'public');
+                $user->profile->profile_picture_path = $path;
+            }
+
             $user->profile->save();
 
-
-            $user->schedule->shift_id = $data['employeeShiftId'];
-            $user->schedule->location_id = $data['employeeWorkLocationId'];
+            // Update Schedule
+            $user->schedule->shift_id = $data['shiftId'];
+            $user->schedule->location_id = $data['locationId'];
             $user->schedule->save();
+        });
 
-            DB::commit();
+        return $user->fresh(['schedule.shift', 'schedule.location', 'profile.role', 'profile.department']);
 
-            return Helper::returnSuccess($user);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return [
-                'status' => false,
-                'errors' => ["message" => $e->getMessage()]
-            ];
-        }
     }
 
     public function deleteById(int $id)
@@ -208,7 +161,7 @@ class UserService
             return Helper::returnSuccess($user);
     }
 
-    public function findOverview()
+    public function overviewByDepartment()
     {
         $user = UserProfile::with("department")->selectRaw('department_id, COUNT(*) as total_users')->groupBy('department_id')->get()->map(function ($user) {
             return [

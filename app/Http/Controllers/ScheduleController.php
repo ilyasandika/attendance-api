@@ -16,9 +16,9 @@ class ScheduleController extends Controller
         $this->scheduleService = $scheduleService;
     }
 
-    public function showScheduleList()
+    public function showScheduleList(Request $request)
     {
-        $result = $this->scheduleService->getScheduleList();
+        $result = $this->scheduleService->getScheduleList($request->query('search'));
         return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 
@@ -36,7 +36,7 @@ class ScheduleController extends Controller
 
     public function showLocationList(Request $request)
     {
-        $result = $this->scheduleService->getLocationList();
+        $result = $this->scheduleService->getLocationList(false, $request->query('search'));
         return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 
@@ -81,7 +81,7 @@ class ScheduleController extends Controller
 
     public function showShiftList(Request $request)
     {
-        $result = $this->scheduleService->getShiftList();
+        $result = $this->scheduleService->getShiftList(false, $request->query("search"));
         return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
     }
 

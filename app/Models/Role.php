@@ -11,9 +11,26 @@ class Role extends Model
 
     protected $fillable = [
         "name",
-        "description"
+        "description",
+        "default"
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($role) {
+            if ($role->default) {
+                static::where('default', true)->update(['default' => false]);
+            }
+        });
+
+        static::updating(function ($role) {
+            if ($role->default) {
+                static::where('default', true)
+                    ->where('id', '!=', $role->id)
+                    ->update(['default' => false]);
+            }
+        });
+    }
 
     public function profiles()
     {
