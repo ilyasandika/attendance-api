@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Route;
 // Route umum (tanpa login)
 Route::get('/', fn() => 'Hello World');
 Route::get('/server-time', fn() => response()->json([
-    'day' => Carbon::now()->translatedFormat('l'),
+    'day' => Carbon::now()->Format('l'),
     'datetime' => Carbon::now()->toDateTimeString(),
 ]));
 
@@ -46,10 +46,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin')->group(function () {
         // User Management
         Route::post('/users', [AuthController::class, 'register']);
-        Route::get('/users', [UserController::class, 'index']);
-        Route::get('/users/recent', [UserController::class, 'showLatest']);
-        Route::get('/users/department', [UserController::class, 'overviewByDepartment']);
-        Route::delete('/users/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+');
+        Route::get('/users', [UserController::class, 'getUsers']);
+        Route::get('/users/recent', [UserController::class, 'getLatestUsers']);
+        Route::get('/users/department', [UserController::class, 'getUsersByDepartment']);
+        Route::get('/users/{id}', [UserController::class, 'getUserById'])->where('id', '[0-9]+');
+        Route::delete('/users/{id}', [UserController::class, 'deleteUserById'])->where('id', '[0-9]+');
+        Route::post('/users/{id}', [UserController::class, 'updateUserById'])->where('id', '[0-9]+');
+        Route::get('/users/{id}', [UserController::class, 'getUserById'])->where('id', '[0-9]+');
 
         // Shift Management
         Route::get('/schedules/shifts', [ScheduleController::class, 'showShiftList']);
@@ -102,22 +105,22 @@ Route::middleware('auth:sanctum')->group(function () {
     // ============== SHARED (admin + employee) ==============
     Route::middleware('role:admin,employee')->group(function () {
         // View own profile
-        Route::get('/users/current', [UserController::class, 'showUserByUserLogin']);
-        Route::post('/users/edit', [UserController::class, 'updateUserByLogin']);
-        Route::post('/users/{id}', [UserController::class, 'updateUserById']); // update self
+        Route::get('/users/current', [UserController::class, 'getCurrentUser']);
+        Route::post('/users/edit', [UserController::class, 'updateCurrentUser']);
 
         // Attendance
         Route::get('/attendances/force', [AttendanceController::class, 'forceCheck']);
         Route::post('/attendances/check', [AttendanceController::class, 'checkIn']);
         Route::get('/attendances/users', [AttendanceController::class, 'showAttendanceListByUserLogin']);
-        Route::get('/attendances/{id}', [AttendanceController::class, 'showAttendanceById']);
+        Route::get('/attendances/date', [AttendanceController::class, 'showAttendanceByDateAndUserLogin']);
+        Route::get('/attendances/{id}', [AttendanceController::class, 'showAttendanceById'])->where('id', '[0-9]+');
 
         // View data
-        Route::get('/users/{id}', [UserController::class, 'show']);
         Route::get('/schedules/shifts/all', [ScheduleController::class, 'showShiftNameList']);
         Route::get('/schedules/shifts/{id}', [ScheduleController::class, 'showShiftById'])->where('id', '[0-9]+');
-        Route::get('/shifts/{id}', [ShiftController::class, 'getShiftById'])->where('id', '[0-9]+');
+        Route::get('/shifts/me', [ShiftController::class, 'getUserShiftByUserLogin']);
         Route::get('/shifts/all', [ShiftController::class, 'getShiftDropdown']);
+        Route::get('/shifts/{id}', [ShiftController::class, 'getShiftById'])->where('id', '[0-9]+');
 
         Route::get('/schedules/shifts/details', [ScheduleController::class, 'showShiftDetailList']);
         Route::get('/schedules/locations/all', [ScheduleController::class, 'showLocationNameList']);
@@ -127,7 +130,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/schedules/holidays/{id}', [HolidayController::class, 'showHolidayById']);
         Route::get('/departments/all', [DepartmentController::class, 'getDepartmentDropdown']);
         Route::get('/roles', [RoleController::class, 'getRoleList']);
-        Route::get('/roles/all', [RoleController::class, 'geRoleDropdown']);;
+        Route::get('/roles/all', [RoleController::class, 'getRoleDropdown']);;
 
         //auth
         Route::get('/logout', [AuthController::class, 'logout']);

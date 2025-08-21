@@ -98,6 +98,14 @@ class ShiftServices
         });
     }
 
+    public function getUserShiftByUserId ($userid) {
+        $shift = Shift::with("shiftDay")->whereHas('schedule', function ($query) use ($userid) {
+            $query->where('user_id', $userid);
+        });
+
+        return new ShiftResource($shift->first());
+    }
+
     public function deleteShiftById(int $id)
     {
         $shift = Shift::with("shiftDay")->find($id);

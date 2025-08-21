@@ -30,5 +30,6 @@ return [
     'account_disabled' => 'Akun Anda telah dinonaktifkan',
 
     //
-    'create_failed' => 'Gagal membuat data'
+    'create_failed' => 'Gagal membuat data',
+    'not_allowed_outside_location' => 'Anda tidak berada di lokasi kehadiran',
 ];

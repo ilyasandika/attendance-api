@@ -74,6 +74,15 @@ class Handler extends ExceptionHandler
                 'errors' => [$exception->getMessage()],
             ], 409);
         }
+
+        if ($exception instanceof OutsideLocationException) {
+            return response()->json([
+                'success' => false,
+                'message' => __('errorMessages.not_allowed_outside_location'),
+                'errors' => [$exception->getMessage()],
+            ], 400);
+        }
+
         return response()->json([
             'success' => false,
             'message' => __('errorMessages.server_error'),

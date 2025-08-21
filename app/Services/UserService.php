@@ -1,24 +1,20 @@
 <?php
 
-
 namespace App\Services;
 
-use App\Helpers\Helper;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\UserProfile;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserService
 {
-    public function findAll($search)
+    public function getUsers($search = null)
     {
-
         $query = User::query();
 
         if ($search) {
@@ -29,36 +25,34 @@ class UserService
                 });
         }
 
-        $user = new UserCollection($query->with("profile")->paginate(10));
-
-        if (!$user) {
-            return Helper::returnIfNotFound($user, "user not found");
-        }
-
-        return Helper::returnSuccess($user);
+        return new UserCollection($query->with("profile")->paginate(10));
     }
 
-    public function findById(int $id)
+    public function getUserById(int $id)
     {
         $user = User::with('schedule.shift', 'schedule.location', 'profile.role', 'profile.department')->find($id);
 
         if (!$user) {
-            return Helper::returnIfNotFound($user, "user not found");
+            throw new NotFoundHttpException(__('errorMessages.not_found'));
         }
 
+        if($user->photo) {
+            $user->photo = url("storage/{$user->photo}");
+        }
 
-        return Helper::returnSuccess(new UserResource($user));
+        return new UserResource($user);
     }
 
-    public function updateById(Request $request, array $data, int $id)
+    public function updateUserById(array $data, int $id)
     {
         $user = User::with('schedule.shift', 'schedule.location', 'profile.role', 'profile.department')->find($id);
 
         if (!$user) {
-            return Helper::returnIfNotFound($user, "user not found");
+            throw new NotFoundHttpException(__('errorMessages.not_found'));
         }
-        DB::transaction(function () use ($request, $data, $user, $id) {
-            //Update User
+
+        DB::transaction(function () use ($data, $user, $id) {
+            // Update User
             $user->id = $id;
             $user->employee_id = $data['employeeId'];
             $user->email = $data['email'];
@@ -70,7 +64,7 @@ class UserService
 
             $user->save();
 
-            //Update Profile
+            // Update Profile
             $user->profile->user_id = $id;
             $user->profile->role_id = $data['roleId'];
             $user->profile->department_id = $data['departmentId'];
@@ -83,8 +77,8 @@ class UserService
             $user->profile->telegram = $data['telegram'] ?? null;
             $user->profile->biography = $data['biography'] ?? null;
 
-            if ($request->hasFile('photo')) {
-                $file = $request->file('photo');
+            if (isset($data['photo'])) {
+                $file = $data['photo'];
                 $filename = $data['employeeId'] . '_' . time() . '.' . $file->getClientOriginalExtension();
 
                 if (
@@ -107,73 +101,62 @@ class UserService
         });
 
         return $user->fresh(['schedule.shift', 'schedule.location', 'profile.role', 'profile.department']);
-
     }
 
-    public function deleteById(int $id)
+    public function deleteUserById(int $id)
     {
         $user = User::with('profile', 'schedule')->find($id);
 
         if (!$user) {
-            return [
-                'status' => false,
-                'errors' => ["message" => "User not found"]
-            ];
+            throw new NotFoundHttpException(__('errorMessages.not_found'));
         }
 
         DB::beginTransaction();
         try {
-
             if ($user->profile->profile_photo_path) {
                 Storage::disk('public')->delete($user->profile->profile_photo_path);
             }
 
             $user->profile->delete();
             $user->schedule->delete();
-
             $user->delete();
 
             DB::commit();
-
-            return Helper::returnSuccess($user);
+            return $user;
         } catch (\Exception $e) {
             DB::rollBack();
-            return [
-                'status' => false,
-                'errors' => ["message" => $e->getMessage()]
-            ];
+            throw $e;
         }
     }
 
-    public function findLatest()
+    public function getLatestUsers()
     {
-        $user = User::with('profile')->latest()->take(5)->get()->map(function ($user) {
-            return [
-                "id" => $user->id,
-                "employeeId" => $user->employee_id,
-                "employeeName" => $user->profile->name,
-                "createdAt" => strtotime($user->created_at)
-            ];
-        });
-
-
-        if ($user)
-            return Helper::returnSuccess($user);
+        return User::with('profile')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($user) {
+                return [
+                    "id" => $user->id,
+                    "employeeId" => $user->employee_id,
+                    "employeeName" => $user->profile->name,
+                    "createdAt" => strtotime($user->created_at)
+                ];
+            });
     }
 
-    public function overviewByDepartment()
+    public function getUsersByDepartment()
     {
-        $user = UserProfile::with("department")->selectRaw('department_id, COUNT(*) as total_users')->groupBy('department_id')->get()->map(function ($user) {
-            return [
-                "departmentId" => $user->department_id,
-                "departmentName" => $user->department->name,
-                "totalUser" => $user->total_users
-            ];
-        });
-
-        if (!$user) {
-            return Helper::returnIfNotFound($user, "user not found");
-        }
-        return Helper::returnSuccess($user);
+        return UserProfile::with("department")
+            ->selectRaw('department_id, COUNT(*) as total_users')
+            ->groupBy('department_id')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    "departmentId" => $user->department_id,
+                    "departmentName" => $user->department->name,
+                    "totalUser" => $user->total_users
+                ];
+            });
     }
 }

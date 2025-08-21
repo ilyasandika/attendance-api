@@ -39,4 +39,11 @@ class UserProfile extends Model
     {
         return $this->belongsTo(Department::class);
     }
+
+    public function getProfilePicturePathAttribute($value)
+    {
+        return $value
+            ? url("storage/{$value}")
+            : url("images/default_profile.svg");
+    }
 }

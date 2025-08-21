@@ -8,62 +8,62 @@ use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-
 class UserController extends Controller
 {
-    protected $userService;
+    protected UserService $userService;
 
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
     }
 
-    public function index(Request $request)
+    public function getUsers(Request $request)
     {
-        $result = $this->userService->findAll($request->query("search"));
-        return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
+        $data = $this->userService->getUsers($request->query("search"));
+        return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 
-    public function show(Request $request)
+    public function getUserById(Request $request)
     {
-        $result = $this->userService->findById($request->route('id'));
-        return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
+        $data = $this->userService->getUserById($request->route('id'));
+        return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 
-    public function showUserByUserLogin(Request $request)
+    public function getCurrentUser()
     {
-        $result = $this->userService->findById(Auth::user()->id);
-        return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
+        $data = $this->userService->getUserById(Auth::user()->id);
+        return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 
     public function updateUserById(UpdateUserRequest $request)
     {
         $data = $request->validated();
-        $data = $this->userService->updateById($request, $data, $data['id']);
-        return Helper::responseSuccessTry($data, __('successMessages.user_update_success'), 204);
+        $data = $this->userService->updateUserById($data, $data['id']);
+        return Helper::responseSuccessTry($data, __('successMessages.update_success'));
     }
 
-    public function updateUserByLogin (UpdateUserRequest $request){
+    public function updateCurrentUser(UpdateUserRequest $request)
+    {
         $data = $request->validated();
-        $data = $this->userService->updateById($request, $data, (int)Auth::user()->id);
-        return Helper::responseSuccessTry($data, __('successMessages.user_update_success'), 204);
+        $data = $this->userService->updateUserById($data, Auth::user()->id);
+        return Helper::responseSuccessTry($data, __('successMessages.update_success'));
     }
 
-    public function destroy(Request $request)
+    public function deleteUserById(Request $request)
     {
-        $result = $this->userService->deleteById($request->route('id'));
-        return (!$result['status']) ? Helper::responseError($result, "NOT FOUND") : Helper::responseSuccess($result, "SUCCESS");
+        $data = $this->userService->deleteUserById($request->route('id'));
+        return Helper::responseSuccessTry($data, __('successMessages.delete_success'));
     }
 
-    public function showLatest()
+    public function getLatestUsers()
     {
-        $result = $this->userService->findLatest();
-        return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
+        $data = $this->userService->getLatestUsers();
+        return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 
-    public function overviewByDepartment()
+    public function getUsersByDepartment()
     {
-        $result = $this->userService->overviewByDepartment();
-        return (!$result['status']) ? Helper::responseError($result["data"], "NOT FOUND") : Helper::responseSuccess($result["data"], "SUCCESS");
+        $data = $this->userService->getUsersByDepartment();
+        return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 }
