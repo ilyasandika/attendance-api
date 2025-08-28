@@ -51,6 +51,7 @@ class ShiftServices
                 "name" => $data['name'],
                 "description" => $data['description'],
                 "default" => $data['default'],
+                "allow_outside_location" => $data['allowOutsideLocation'],
             ]);
             foreach ($this->days as $day) {
                 ShiftDay::create([
@@ -80,6 +81,7 @@ class ShiftServices
             $shift->name = $data['name'];
             $shift->description = $data['description'];
             $shift->default = $data['default'];
+            $shift->allow_outside_location = $data['allowOutsideLocation'];
             $shift->save();
 
             foreach ($this->days as $day) {

@@ -77,10 +77,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/schedules/holidays/{id}', [HolidayController::class, 'updateHolidayById'])->where('id', '[0-9]+');
         Route::delete('/schedules/holidays/{id}', [HolidayController::class, 'deleteHolidayById'])->where('id', '[0-9]+');
 
-        // Schedule update
+        // Schedule
         Route::get('/schedules', [ScheduleController::class, 'showScheduleList']);
         Route::put('/schedules/{id}', [ScheduleController::class, 'updateSchedule'])->where('id', '[0-9]+');
-        Route::get('/attendances/users/{id}', [AttendanceController::class, 'showAttendanceListByUserIdPath'])->where('id', '[0-9]+');
 
         // Department
         Route::get('/departments', [DepartmentController::class, 'getDepartmentList']);
@@ -97,6 +96,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
         //attendance
         Route::get('/attendances', [AttendanceController::class, 'showAttendanceList']);
+        Route::get('/attendances/generate', [AttendanceController::class, 'generateBaseline']);
+        Route::get('/attendances/force', [AttendanceController::class, 'forceCheck']);
+        Route::get('/attendances/summary', [AttendanceController::class, 'showAttendanceSummary']);
+        Route::get('/attendances/timeline', [AttendanceController::class, 'showAttendanceTimeLine']);
+        Route::get('/attendances/users/{id}', [AttendanceController::class, 'showAttendanceListByUserIdPath'])->where('id', '[0-9]+');
+
 
         // Force Absen
 
@@ -109,7 +114,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/users/edit', [UserController::class, 'updateCurrentUser']);
 
         // Attendance
-        Route::get('/attendances/force', [AttendanceController::class, 'forceCheck']);
         Route::post('/attendances/check', [AttendanceController::class, 'checkIn']);
         Route::get('/attendances/users', [AttendanceController::class, 'showAttendanceListByUserLogin']);
         Route::get('/attendances/date', [AttendanceController::class, 'showAttendanceByDateAndUserLogin']);

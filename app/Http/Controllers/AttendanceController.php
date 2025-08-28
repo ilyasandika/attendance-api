@@ -68,4 +68,19 @@ class AttendanceController extends Controller
         return helper::responseSuccessTry($result, $result ? "SUCCESS" : "NOT FOUND");
     }
 
+    public function showAttendanceSummary(Request $request) {
+        $result = $this->attendanceService->getAttendanceSummary($request->query('date'));
+        return helper::responseSuccessTry($result, "SUCCESS");
+    }
+
+    public function showAttendanceTimeLine(Request $request) {
+        $result = $this->attendanceService->getAttendanceTimeLine($request->query('date'), $request->query('option')? $request->query('option') : 'monthly');
+        return helper::responseSuccessTry($result, "SUCCESS");
+    }
+
+    public function generateBaseline () {
+        $this->attendanceService->generateDailyBaseline();
+        return helper::responseSuccessTry(null, "SUCCESS");
+    }
+
 }

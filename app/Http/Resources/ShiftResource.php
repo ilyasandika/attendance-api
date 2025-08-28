@@ -14,6 +14,7 @@ class ShiftResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'default' => $this->default,
+            'allowOutsideLocation' => $this->allow_outside_location,
             "isUsed" => $this->schedule()->exists(),
             'monday' => $this->formatDay("monday"),
             'tuesday' => $this->formatDay("tuesday"),

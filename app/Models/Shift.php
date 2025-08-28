@@ -12,7 +12,8 @@ class Shift extends Model
     protected $fillable = [
         "name",
         "description",
-        "default"
+        "default",
+        "allow_outside_location",
     ];
 
     protected static function booted()

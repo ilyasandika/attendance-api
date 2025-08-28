@@ -6,37 +6,55 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('schedule_id')->constrained('schedules')->onDelete('cascade');
+            $table->foreignId('schedule_id')->nullable()->constrained('schedules')->onDelete('cascade');
+
             $table->integer('date');
-            $table->integer('check_in_time');
-            $table->integer('check_out_time')->nullable();
-            $table->string('photo_check_in');
-            $table->string('photo_check_out')->nullable();
-            $table->decimal('latitude_check_in', 10, 8);
-            $table->decimal('longitude_check_in', 11, 8);
-            $table->decimal('latitude_check_out', 10, 8)->nullable();
-            $table->decimal('longitude_check_out', 11, 8)->nullable();
-            $table->enum('check_in_status', ['On Time', 'Late', 'Absent']);
-            $table->enum('check_out_status', ['On Time', 'Early Leave', 'Absent']);
-            $table->boolean('checkin_outside_location')->default(false);
-            $table->boolean('checkout_outside_location')->default(false);
+
+            //history
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
+            $table->integer('duration')->nullable();
+            $table->integer('late_minutes')->nullable();
+            $table->integer('early_leave_minutes')->nullable();
+            $table->integer('overtime_minutes')->nullable();
+
+            // Check in
+            $table->bigInteger('check_in_time')->nullable();
+            $table->string('check_in_photo')->nullable();
+            $table->decimal('check_in_latitude', 10, 7)->nullable();
+            $table->decimal('check_in_longitude', 10, 7)->nullable();
+            $table->text('check_in_address')->nullable();
+            $table->enum('check_in_status', ['On Time', 'Late', 'Absent'])->nullable();
+            $table->text('check_in_comment')->nullable();
+            $table->boolean('check_in_outside_location')->default(false);
+
+            // Check out
+            $table->bigInteger('check_out_time')->nullable();
+            $table->string('check_out_photo')->nullable();
+            $table->decimal('check_out_latitude', 10, 7)->nullable();
+            $table->decimal('check_out_longitude', 10, 7)->nullable();
+            $table->text('check_out_address')->nullable();
+            $table->enum('check_out_status', ['On Time', 'Early Leave', 'Absent'])->nullable();
+            $table->text('check_out_comment')->nullable();
+            $table->boolean('check_out_outside_location')->default(false);
+
+
+
+
+            $table->boolean('auto_checkout')->default(false);
+
             $table->unique(['user_id', 'date']);
-            $table->text('comment')->nullable();
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('attendances');

@@ -32,6 +32,7 @@ class ShiftRequest extends FormRequest
             "friday" => "required|array",
             "saturday" => "required|array",
             "sunday" => "required|array",
+            "allowOutsideLocation" => "boolean",
         ];
     }
 

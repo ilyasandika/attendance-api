@@ -42,6 +42,12 @@ class AttendanceCollection extends ResourceCollection
                     'checkInComment'          => $attendance->check_in_comment,
                     'checkOutComment'         => $attendance->check_out_comment,
                     'autoCheckOut'            => $attendance->auto_checkout,
+                    'startTime'               => $attendance->start_time,
+                    'endTime'                 => $attendance->end_time,
+                    'duration'                => $attendance->duration,
+                    'lateMinutes'             => $attendance->late_minutes,
+                    'earlyLeaveMinutes'       => $attendance->early_leave_minutes,
+                    'overTimeMinutes'         => $attendance->overtime_minutes,
                 ];
             }),
             'meta' => [

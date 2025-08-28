@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string("name")->unique();
             $table->string("description")->nullable();
             $table->boolean("default")->default(false);
+            $table->boolean('allow_outside_location')->default(false);
             $table->timestamps();
         });
     }

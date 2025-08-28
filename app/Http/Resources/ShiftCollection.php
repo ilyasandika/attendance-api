@@ -21,6 +21,7 @@ class ShiftCollection extends ResourceCollection
                     'name' => $shift->name,
                     'description' => $shift->description,
                     'default' => $shift->default,
+                    'allowedOutsideLocation' => $shift->allow_outside_location,
                     'isUsed' => $shift->schedule()->exists(),
                     'monday' => $this->formatDay($shift->shiftDay, "monday"),
                     'tuesday' => $this->formatDay($shift->shiftDay, "tuesday"),

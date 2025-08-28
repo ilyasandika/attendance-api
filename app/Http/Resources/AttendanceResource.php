@@ -35,6 +35,12 @@ class AttendanceResource extends JsonResource
             'checkInComment'          => $this->check_in_comment,
             'checkOutComment'         => $this->check_out_comment,
             'autoCheckout'            => $this->auto_checkout,
+            'startTime'               => $this->start_time,
+            'endTime'                 => $this->end_time,
+            'duration'                => $this->duration,
+            'lateMinutes'             => $this->late_minutes,
+            'earlyLeaveMinutes'       => $this->early_leave_minutes,
+            'overTimeMinutes'         => $this->overtime_minutes,
         ];
     }
 }

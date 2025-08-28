@@ -6,8 +6,11 @@ use App\Exceptions\FieldInUseException;
 use App\Exceptions\OutsideLocationException;
 use App\Http\Resources\AttendanceCollection;
 use App\Http\Resources\AttendanceResource;
+use App\Http\Resources\AttendanceSummaryResource;
 use App\Models\Attendance;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -30,7 +33,8 @@ class AttendanceService
             $endOfDay = strtotime($date . ' 23:59:59');
 
             if ($all && !$userId) {
-                $query->whereBetween('date', [$startOfDay, $endOfDay]);
+                $query->whereBetween('date', [$startOfDay, $endOfDay])
+                ->orderBy('updated_at', 'desc');
                 return new AttendanceCollection($query->paginate(10));
             }
 
@@ -57,7 +61,7 @@ class AttendanceService
             });
         }
 
-        $attendance = new AttendanceCollection($query->orderBy('date', 'desc')->paginate(10));
+        $attendance = new AttendanceCollection($query->orderBy('updated_at', 'desc')->paginate(10));
         if (!$attendance) {
             throw new NotFoundHttpException(__('errorMessages.not_found'));
         }
@@ -98,6 +102,161 @@ class AttendanceService
         return $attendance;
     }
 
+    public function getAttendanceSummary($date = null) {
+        $date = $date ? Carbon::parse($date) : Carbon::today();
+        $dayName = strtolower($date->format('l'));
+
+        $startOfDay = $date->copy()->startOfDay()->timestamp;
+        $endOfDay   = $date->copy()->endOfDay()->timestamp;
+
+        $usersOff = User::whereHas('schedule.shift.shiftDay', function ($q) use ($dayName) {
+            $q->where('name', $dayName)->where('is_on', 0);
+        })->count();
+
+        $attendanceSummary = [
+            'totalEmployee' => User::where('role', 'employee')->count(),
+            'totalOnTime'   => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
+                ->where('check_in_status', 'On Time')->count(),
+            'totalLate'     => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
+                ->where('check_in_status', 'Late')->count(),
+            'totalAbsent'   => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
+                ->where('check_in_status', 'Absent')->count(),
+            'totalEarlyLeave' => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
+                ->where('check_out_status', 'Early Leave')->count(),
+            'totalMissingCheckOut' => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
+                ->where('check_out_status', 'Absent')->count(),
+            'totalOutsideLocationCheckIn' => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
+                ->where('check_in_outside_location', 1)->count(),
+            'totalOutsideLocationCheckOut' => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
+                ->where('check_out_outside_location', 1)->count(),
+            'usersOff' => $usersOff,
+        ];
+
+        return new AttendanceSummaryResource((object) $attendanceSummary);
+    }
+
+    public function getAttendanceTimeLine($date = null, $option = "monthly") {
+        $date = $date ? Carbon::parse($date) : Carbon::today();
+
+
+        $yearsBack = 5;
+
+        $years = [];
+        $result = [];
+
+
+        for ($i = 0; $i < $yearsBack; $i++) {
+            $years[] = $date->copy()->subYears($i)->format('Y');
+        }
+
+        if ($option === "daily") {
+            $dates = [];
+            $daysBack = 7;
+
+            for ($i = 0; $i < $daysBack; $i++) {
+                $dates[] = $date->copy()->subDays($i)->format('Y-m-d');
+            }
+
+            $timeline = Attendance::select(
+                DB::raw('DATE(FROM_UNIXTIME(check_in_time)) as date'),
+                DB::raw('COUNT(*) as totalPresent')
+            )
+                ->where('date', '>=', $date->copy()->subDays($daysBack)->startOfDay()->timestamp)
+                ->groupBy(DB::raw('DATE(FROM_UNIXTIME(check_in_time))'))
+                ->orderBy('date')
+                ->get()
+                ->keyBy('date');
+
+
+            foreach ($dates as $d) {
+                $userOn = Attendance::whereBetween('date', [Carbon::parse($d)->copy()->startOfDay()->timestamp, Carbon::parse($d)->copy()->endOfDay()->timestamp])->count();
+
+                $present = $timeline->has($d) ? $timeline[$d]->totalPresent : 0;
+
+                $result[] = [
+                    'date' => $d,
+                    'totalPresent' => $userOn > 0 ? round($present / $userOn, 2) : 0,
+                    'type' => 'daily'
+                ];
+            }
+        }
+
+
+        if ($option === "monthly") {
+            $monthsBack = 12;
+            $months = [];
+
+            for ($i = 0; $i < $monthsBack; $i++) {
+                $months[] = $date->copy()->subMonths($i)->format('Y-m');
+            }
+
+            $timelineByMonth = Attendance::select(
+                DB::raw("DATE_FORMAT(FROM_UNIXTIME(check_in_time), '%Y-%m') as month"),
+                DB::raw("COUNT(*) as totalPresent")
+            )
+                ->where('date', '>=', $date->copy()->subMonths($monthsBack)->startOfMonth()->timestamp)
+                ->whereNotNull('check_in_time')
+                ->groupBy(DB::raw("DATE_FORMAT(FROM_UNIXTIME(check_in_time), '%Y-%m')"))
+                ->orderBy('month')
+                ->get()
+                ->keyBy('month');
+
+            foreach ($months as $m) {
+                $startOfMonth = Carbon::parse($m)->startOfMonth()->timestamp;
+                $endOfMonth   = Carbon::parse($m)->endOfMonth()->timestamp;
+
+                $totalUsers = Attendance::whereBetween('date', [$startOfMonth, $endOfMonth])->count();
+
+                $present = $timelineByMonth->has($m) ? $timelineByMonth[$m]->totalPresent : 0;
+
+                $result[] = [
+                    'date' => $m,
+                    'totalPresent' => $totalUsers > 0 ? round($present / $totalUsers, 2) : 0,
+                    'type' => 'monthly'
+                ];
+            }
+        }
+
+        if ($option === "yearly") {
+            $yearsBack = 5;
+            $years = [];
+
+            for ($i = 0; $i < $yearsBack; $i++) {
+                $years[] = $date->copy()->subYears($i)->format('Y');
+            }
+
+            // Ambil total hadir (present) per tahun
+            $timelineByYear = Attendance::select(
+                DB::raw("DATE_FORMAT(FROM_UNIXTIME(check_in_time), '%Y') as year"),
+                DB::raw("COUNT(*) as totalPresent")
+            )
+                ->where('date', '>=', $date->copy()->subYears($yearsBack)->startOfYear()->timestamp)
+                ->whereNotNull('check_in_time')
+                ->groupBy(DB::raw("DATE_FORMAT(FROM_UNIXTIME(check_in_time), '%Y')"))
+                ->orderBy('year')
+                ->get()
+                ->keyBy('year');
+
+            foreach ($years as $y) {
+                $startOfYear = Carbon::createFromFormat('Y', $y)->startOfYear()->timestamp;
+                $endOfYear   = Carbon::createFromFormat('Y', $y)->endOfYear()->timestamp;
+
+                $totalUsers = Attendance::whereBetween('date', [$startOfYear, $endOfYear])->count();
+
+                $present = $timelineByYear->has($y) ? $timelineByYear[$y]->totalPresent : 0;
+
+                $result[] = [
+                    'date' => $y,
+                    'totalPresent' => $totalUsers > 0 ? round($present / $totalUsers, 2) : 0,
+                    'type' => 'yearly'
+                ];
+            }
+        }
+
+
+
+        return array_reverse($result);
+    }
 
     public function handleAttendance(array $data, $file,  int $userId)
     {
@@ -107,20 +266,33 @@ class AttendanceService
 
 
         $user = $this->getUserWithSchedule($userId);
+
         ['start' => $startOfDay, 'end' => $endOfDay] = $this->getStartEndOfDay();
 
         $day = strtolower(now()->format('l'));
         $checkInSchedule = $user->schedule->shift->shiftDay->where('name', $day)->first()->check_in;
         $checkOutSchedule = $user->schedule->shift->shiftDay->where('name', $day)->first()->check_out;
+        $breakStartSchedule = $user->schedule->shift->shiftDay->where('name', $day)->first()->break_start;
+        $breakEndSchedule = $user->schedule->shift->shiftDay->where('name', $day)->first()->break_end;
         $today = now()->format('Y-m-d');
         $checkInScheduleTimestamp = strtotime("$today $checkInSchedule");
         $checkOutScheduleTimestamp = strtotime("$today $checkOutSchedule");
+        $breakStartScheduleTimestamp = strtotime("$today $breakStartSchedule");
+        $breakEndScheduleTimestamp = strtotime("$today $breakEndSchedule");
+        $breakTime = ($breakEndScheduleTimestamp - $breakStartScheduleTimestamp);
+
+        Log::info($startOfDay);
+        Log::info($endOfDay);
 
         $attendance = Attendance::where('user_id', $userId)
-            ->whereBetween('date', [$startOfDay, $endOfDay])
+            ->whereBetween('date', [(int) $startOfDay, (int) $endOfDay])
             ->first();
 
-        $type = $attendance ? 'out' : 'in';
+
+
+
+
+        $type = $attendance->check_in_time === null ? 'in' : 'out';
 
         $filename = $this->storeAttendancePhoto($file, $user->employee_id, $type);
 
@@ -138,8 +310,12 @@ class AttendanceService
 
         if (!$attendance) {
             $attendance = new Attendance();
+            Log::info("a");
+            Log::info($user->schedule->id);
             $attendance->user_id = $userId;
             $attendance->schedule_id = $user->schedule->id;
+            $attendance->start_time = $checkInSchedule;
+            $attendance->end_time = $checkOutSchedule;
             $attendance->date = strtotime(now());
         }
 
@@ -153,6 +329,9 @@ class AttendanceService
             $attendance->check_in_outside_location = $outsideLocation;
             $attendance->check_in_address = $data['address'];
             $attendance->check_in_comment = $data['comment'] ?? null;
+            if ($attendance->check_in_time > $checkInScheduleTimestamp) {
+                $attendance->late_minutes = ($attendance->check_in_time - $checkInScheduleTimestamp) / 60;
+            }
         } else {
 
             if ($attendance->check_out_photo) {
@@ -167,6 +346,14 @@ class AttendanceService
             $attendance->check_out_outside_location = $outsideLocation;
             $attendance->check_out_address = $data['address'] ?? null;
             $attendance->check_out_comment = $data['comment'] ?? null;
+            $attendance->duration = ($attendance->check_out_time - $attendance->check_in_time - $breakTime) / 60;
+            if ($attendance->check_out_time < $checkOutScheduleTimestamp) {
+                $attendance->early_leave_minutes = ($checkOutScheduleTimestamp - $attendance->check_out_time) / 60;
+            }
+
+            if ($attendance->check_out_time > $checkOutScheduleTimestamp) {
+                $attendance->overtime_minutes = ($attendance->check_out_time - $checkOutScheduleTimestamp) / 60;
+            }
         }
 
         if (!$attendance->save()) {
@@ -201,8 +388,6 @@ class AttendanceService
         return !Helper::isWithinRadius($checkLat, $checkLong, $workLat, $workLong, $radius);
     }
 
-
-
     public function forceCheckoutAll()
     {
         $path = 'photos/default_auto_checkout.jpg';
@@ -231,6 +416,50 @@ class AttendanceService
                 }
             } else {
                 $this->createForceCheckout($user, $now, $path);
+            }
+        }
+
+        return true;
+    }
+
+    public function generateDailyBaseline()
+    {
+        $path = 'photos/default_auto_checkout.jpg';
+        $today = now()->toDateString();
+        $startOfDay = strtotime($today . ' 00:01:00');
+        $endOfDay = strtotime($today . ' 23:59:59');
+
+        $users = User::with('schedule.shift.shiftDay', 'schedule.location')
+            ->where('role', 'employee') // kalau mau filter role employee
+            ->get();
+
+        foreach ($users as $user) {
+            if (!$user->schedule || Helper::isOff($user->id)) continue;
+
+            $dayName = strtolower(now()->format('l'));
+            $shiftDay = $user->schedule->shift->shiftDay->where('name', $dayName)->first();
+
+            if (!$shiftDay || !$shiftDay->is_on) continue; // kalau bukan hari kerja, skip
+
+
+
+
+            // cek apakah sudah ada attendance record
+            $attendance = Attendance::where('user_id', $user->id)
+                ->whereBetween('date', [$startOfDay, $endOfDay])
+                ->first();
+
+            if (!$attendance) {
+                // buat baseline record status absent
+                Attendance::create([
+                    'user_id'        => $user->id,
+                    'date'           => $startOfDay,
+                    'check_in_time'  => null,
+                    'check_in_status'  => null,
+                    'check_out_time' => null,
+                    'check_out_status' => null,
+                    'photo'          => $path,
+                ]);
             }
         }
 
@@ -275,4 +504,6 @@ class AttendanceService
             'auto_checkout' => true,
         ]);
     }
+
+
 }
