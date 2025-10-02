@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             "email" => $this->email,
             "name" => $this->profile->name,
             "gender" => $this->profile->gender,
+            'profileId' => $this->profile->id,
             "birthDate" => $this->profile->birth_date,
             "phoneNumber" => $this->profile->phone_number,
             "role" => $this->profile->role->name,
@@ -37,6 +38,7 @@ class UserResource extends JsonResource
             "biography" => $this->profile->biography,
             "status" => $this->status,
             "photo" => $this->profile->profile_picture_path,
+            "dateCreated" => strtotime($this->created_at),
         ];
     }
 }

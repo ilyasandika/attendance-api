@@ -45,21 +45,21 @@ class UserSeeder extends Seeder
 
         // Employees (15 user)
         $employees = [
-            ["employee_id" => "002", "email" => "employee1@gmail.com", "name" => "Employee One", "role_id" => 2, "department_id" => 1, "shift_id" => 2, "location_id" => 2],
-            ["employee_id" => "003", "email" => "employee2@gmail.com", "name" => "Employee Two", "role_id" => 3, "department_id" => 2, "shift_id" => 3, "location_id" => 3],
-            ["employee_id" => "004", "email" => "employee3@gmail.com", "name" => "Employee Three", "role_id" => 4, "department_id" => 4, "shift_id" => 1, "location_id" => 4],
-            ["employee_id" => "005", "email" => "employee4@gmail.com", "name" => "Employee Four", "role_id" => 1, "department_id" => 1, "shift_id" => 2, "location_id" => 1],
-            ["employee_id" => "006", "email" => "employee5@gmail.com", "name" => "Employee Five", "role_id" => 2, "department_id" => 4, "shift_id" => 3, "location_id" => 2],
-            ["employee_id" => "007", "email" => "employee6@gmail.com", "name" => "Employee Six", "role_id" => 3, "department_id" => 2, "shift_id" => 1, "location_id" => 3],
-            ["employee_id" => "008", "email" => "employee7@gmail.com", "name" => "Employee Seven", "role_id" => 4, "department_id" => 4, "shift_id" => 2, "location_id" => 4],
-            ["employee_id" => "009", "email" => "employee8@gmail.com", "name" => "Employee Eight", "role_id" => 1, "department_id" => 1, "shift_id" => 3, "location_id" => 1],
-            ["employee_id" => "010", "email" => "employee9@gmail.com", "name" => "Employee Nine", "role_id" => 2, "department_id" => 3, "shift_id" => 1, "location_id" => 2],
-            ["employee_id" => "011", "email" => "employee10@gmail.com", "name" => "Employee Ten", "role_id" => 3, "department_id" => 1, "shift_id" => 2, "location_id" => 3],
-            ["employee_id" => "012", "email" => "employee11@gmail.com", "name" => "Employee Eleven", "role_id" => 4, "department_id" => 1, "shift_id" => 3, "location_id" => 4],
+            ["employee_id" => "002", "email" => "employee1@gmail.com", "name" => "Employee One", "role_id" => 2, "department_id" => 1, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "003", "email" => "employee2@gmail.com", "name" => "Employee Two", "role_id" => 3, "department_id" => 2, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "004", "email" => "employee3@gmail.com", "name" => "Employee Three", "role_id" => 4, "department_id" => 4, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "005", "email" => "employee4@gmail.com", "name" => "Employee Four", "role_id" => 1, "department_id" => 1, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "006", "email" => "employee5@gmail.com", "name" => "Employee Five", "role_id" => 2, "department_id" => 4, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "007", "email" => "employee6@gmail.com", "name" => "Employee Six", "role_id" => 3, "department_id" => 2, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "008", "email" => "employee7@gmail.com", "name" => "Employee Seven", "role_id" => 4, "department_id" => 4, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "009", "email" => "employee8@gmail.com", "name" => "Employee Eight", "role_id" => 1, "department_id" => 1, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "010", "email" => "employee9@gmail.com", "name" => "Employee Nine", "role_id" => 2, "department_id" => 3, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "011", "email" => "employee10@gmail.com", "name" => "Employee Ten", "role_id" => 3, "department_id" => 1, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "012", "email" => "employee11@gmail.com", "name" => "Employee Eleven", "role_id" => 4, "department_id" => 1, "shift_id" => 1, "location_id" => 1],
             ["employee_id" => "013", "email" => "employee12@gmail.com", "name" => "Employee Twelve", "role_id" => 1, "department_id" => 1, "shift_id" => 1, "location_id" => 1],
-            ["employee_id" => "014", "email" => "employee13@gmail.com", "name" => "Employee Thirteen", "role_id" => 2, "department_id" => 2, "shift_id" => 2, "location_id" => 2],
-            ["employee_id" => "015", "email" => "employee14@gmail.com", "name" => "Employee Fourteen", "role_id" => 3, "department_id" => 3, "shift_id" => 3, "location_id" => 3],
-            ["employee_id" => "016", "email" => "employee15@gmail.com", "name" => "Employee Fifteen", "role_id" => 4, "department_id" => 4, "shift_id" => 1, "location_id" => 4],
+            ["employee_id" => "014", "email" => "employee13@gmail.com", "name" => "Employee Thirteen", "role_id" => 2, "department_id" => 2, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "015", "email" => "employee14@gmail.com", "name" => "Employee Fourteen", "role_id" => 3, "department_id" => 3, "shift_id" => 1, "location_id" => 1],
+            ["employee_id" => "016", "email" => "employee15@gmail.com", "name" => "Employee Fifteen", "role_id" => 4, "department_id" => 4, "shift_id" => 1, "location_id" => 1],
         ];
 
 

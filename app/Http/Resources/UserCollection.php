@@ -15,30 +15,12 @@ class UserCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            "users" => $this->collection->map(function ($user) {
-                return [
-                    "id" => $user->id,
-                    "profileId" => $user->profile->id,
-                    "employeeId" => $user->employee_id,
-                    "email" => $user->email,
-                    "name" => $user->profile->name,
-                    "role" => $user->profile->role->name,
-                    "department" => $user->profile->department->name,
-                    "dateCreated" => strtotime($user->created_at),
-                    "status" => $user->status,
-                ];
-            }),
+            "users" => $this->collection,
             'meta' => [
                 'currentPage' => $this->currentPage(),
                 'lastPage' => $this->lastPage(),
                 'total' => $this->total(),
             ],
-            'links' => [
-                "first" => $this->url(1),
-                "last" => $this->url($this->lastPage()),
-                "next" => $this->nextPageUrl(),
-                "prev" => $this->previousPageUrl()
-            ]
         ];
     }
 }

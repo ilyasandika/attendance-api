@@ -4,6 +4,7 @@ return [
     // General
     'success' => 'Success',
     'server_error' => 'A server error has occurred',
+    'failed' => 'Failed',
 
     // Auth
     'unauthorized' => 'You do not have permission to access this resource',
@@ -19,6 +20,8 @@ return [
 
     // Conflict
     'field_in_use' => 'This item cannot be deleted because it is currently in use by other users',
+    'cannot_delete_accepted_or_rejected' => "Cannot delete this item because it's already accepted or rejected",
+    'cannot_cancel_accepted_or_rejected' => "Cannot cancel this item because it's already accepted or rejected",
     'cannot_delete_self' => 'You cannot delete your own account',
     'quota_exceeded' => 'The quota has exceeded the allowed limit',
 

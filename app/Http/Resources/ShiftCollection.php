@@ -15,23 +15,7 @@ class ShiftCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection->map(function ($shift) {
-                return [
-                    'shiftId' => $shift->id,
-                    'name' => $shift->name,
-                    'description' => $shift->description,
-                    'default' => $shift->default,
-                    'allowedOutsideLocation' => $shift->allow_outside_location,
-                    'isUsed' => $shift->schedule()->exists(),
-                    'monday' => $this->formatDay($shift->shiftDay, "monday"),
-                    'tuesday' => $this->formatDay($shift->shiftDay, "tuesday"),
-                    'wednesday' => $this->formatDay($shift->shiftDay, "wednesday"),
-                    'thursday' => $this->formatDay($shift->shiftDay, "thursday"),
-                    'friday' => $this->formatDay($shift->shiftDay, "friday"),
-                    'saturday' => $this->formatDay($shift->shiftDay, "saturday"),
-                    'sunday' => $this->formatDay($shift->shiftDay, "sunday"),
-                ];
-            }),
+            'data' => $this->collection,
             'meta' => [
                 'currentPage' => $this->currentPage(),
                 'lastPage' => $this->lastPage(),

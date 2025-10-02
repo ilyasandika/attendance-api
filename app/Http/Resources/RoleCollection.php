@@ -15,15 +15,7 @@ class RoleCollection extends ResourceCollection
     public function toArray(Request $request): array
     {
         return [
-            'data' => $this->collection->map(function ($role) {
-                return [
-                    'roleId'   => $role->id,
-                    'name'           => $role->name,
-                    'description'    => $role->description,
-                    'default'    => $role->default,
-                    "isUsed" => $role->profiles()->exists(),
-                ];
-            }),
+            'data' => $this->collection,
             'meta' => [
                 'currentPage' => $this->currentPage(),
                 'lastPage'    => $this->lastPage(),

@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ShiftSeeder::class,
             UserSeeder::class,
             HolidaySeeder::class,
+            AttendanceSeeder::class,
         ]);
     }
 }

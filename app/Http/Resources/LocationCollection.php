@@ -15,21 +15,7 @@ class LocationCollection extends ResourceCollection
     public function toArray(Request $request)
     {
         return [
-            "data" => $this->collection->map(function ($location) {
-                return [
-                    "id" => $location->id,
-                    "name" => $location->name,
-                    "description" => $location->description,
-                    "address" => $location->address,
-                    "latitude" => $location->latitude,
-                    "longitude" => $location->longitude,
-                    "radius" => $location->radius,
-                    "default" => $location->default,
-                    "createdAt" => $location->created_at,
-                    "updatedAt" => $location->updated_at,
-                    "isUsed" => $location->schedule()->exists(),
-                ];
-            }),
+            "data" => $this->collection,
             'meta' => [
                 'currentPage' => $this->currentPage(),
                 'lastPage' => $this->lastPage(),

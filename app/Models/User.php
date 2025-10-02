@@ -38,6 +38,11 @@ class User extends Authenticatable
         return $this->hasOne(Schedule::class, "user_id", "id");
     }
 
+    public function leave()
+    {
+        return $this->hasMany(Leave::class, "user_id", "id");
+    }
+
     const ROLE_ADMIN = 'admin';
     const ROLE_EMPLOYEE = 'employee';
 

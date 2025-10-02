@@ -15,15 +15,7 @@ class DepartmentCollection extends ResourceCollection
     public function toArray(Request $request): array
     {
         return [
-            'data' => $this->collection->map(function ($department) {
-                return [
-                    'departmentId'   => $department->id,
-                    'name'           => $department->name,
-                    'description'    => $department->description,
-                    'default'    => $department->default,
-                    'isUsed' => $department->profiles()->exists(),
-                ];
-            }),
+            'data' => $this->collection,
             'meta' => [
                 'currentPage' => $this->currentPage(),
                 'lastPage'    => $this->lastPage(),

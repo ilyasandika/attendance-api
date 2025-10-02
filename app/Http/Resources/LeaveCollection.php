@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class HolidayCollection extends ResourceCollection
+class LeaveCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -18,8 +18,8 @@ class HolidayCollection extends ResourceCollection
             'data' => $this->collection,
             'meta' => [
                 'currentPage' => $this->currentPage(),
-                'lastPage' => $this->lastPage(),
-                'total' => $this->total(),
+                'lastPage'    => $this->lastPage(),
+                'total'       => $this->total(),
             ],
         ];
     }

@@ -4,6 +4,7 @@ return [
     // General
     'success' => 'Berhasil',
     'server_error' => 'Terjadi kesalahan pada server',
+    'failed' => 'Gagal',
 
     // Auth
     'unauthorized' => 'Anda tidak memiliki izin untuk mengakses resource ini',
@@ -19,6 +20,8 @@ return [
 
     // Conflict
     'field_in_use' => 'Data ini tidak dapat dihapus karena sedang digunakan oleh pengguna lain',
+    'cannot_delete_accepted_or_rejected' => 'Data ini tidak dapat dihapus karena sudah disetujui atau ditolak',
+    'cannot_cancel_accepted_or_rejected' => 'Data ini tidak dapat dibatalkan karena sudah disetujui atau ditolak',
     'cannot_delete_self' => 'Anda tidak dapat menghapus akun Anda sendiri',
     'quota_exceeded' => 'Kuota sudah melebihi batas yang ditentukan',
 

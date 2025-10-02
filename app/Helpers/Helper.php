@@ -6,6 +6,7 @@ use App\Models\Holiday;
 use App\Models\User;
 use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Helper
 {
@@ -103,5 +104,22 @@ class Helper
         $shiftDay = $user->schedule->shift->shiftDay->firstWhere('name', $dayName);
 
         return !$shiftDay || !$shiftDay->is_on;
+    }
+
+    public static function findOrError($modelOrQuery, $id)
+    {
+        if (is_string($modelOrQuery)) {
+            /** @var \Illuminate\Database\Eloquent\Model|null $modelOrQuery */
+            $query = $modelOrQuery::query();
+        } else {
+            $query = $modelOrQuery;
+        }
+
+
+        $model = $query->find($id);
+        if (!$model) {
+            throw new NotFoundHttpException(__('errorMessages.not_found'));
+        }
+        return $model;
     }
 }

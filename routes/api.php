@@ -3,9 +3,12 @@
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CobaController;
+use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\LeaveEntitlementController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ShiftController;
@@ -102,8 +105,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/attendances/timeline', [AttendanceController::class, 'showAttendanceTimeLine']);
         Route::get('/attendances/users/{id}', [AttendanceController::class, 'showAttendanceListByUserIdPath'])->where('id', '[0-9]+');
 
+        // Leave
+        Route::post('/leaves/{id}/approve', [LeaveController::class, 'approveLeave'])->where('id', '[0-9]+');
+        Route::post('/leaves/{id}/reject', [LeaveController::class, 'rejectLeave'])->where('id', '[0-9]+');
 
-        // Force Absen
+    });
+
+    // ============== EMPLOYEE ONLY ==============
+
+    Route::middleware('role:employee')->group(function () {
+       //Leave
+        Route::post('/leaves/{id}', [LeaveController::class, 'updateLeave'])->where('id', '[0-9]+');
 
     });
 
@@ -136,9 +148,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/roles', [RoleController::class, 'getRoleList']);
         Route::get('/roles/all', [RoleController::class, 'getRoleDropdown']);;
 
+        //leave
+        Route::get('/leaves', [LeaveController::class, 'getLeaveList']);
+        Route::get('/leaves/user/{id}', [LeaveController::class, 'getLeaveListByUserId']);
+        Route::post('/leaves', [LeaveController::class, 'createLeave']);
+        Route::get('/leaves/{id}', [LeaveController::class, 'getLeaveById'])->where('id', '[0-9]+');
+        Route::delete('/leaves/{id}', [LeaveController::class, 'deleteLeave'])->where('id', '[0-9]+');
+
+        //leave entitlement
+        Route::get('/leave-entitlements', [LeaveEntitlementController::class, 'getLeaveEntitlements']);
+        Route::post('/leave-entitlements/generate', [LeaveEntitlementController::class, 'generateLeaveEntitlement']);
+        Route::get('/leave-entitlements/{id}', [LeaveEntitlementController::class, 'getLeaveEntitlementById'])->where('id', '[0-9]+');
+        Route::get('leave-entitlements/user/{id}', [LeaveEntitlementController::class, 'getLeaveEntitlementByUserId'])->where('id', '[0-9]+');
+
         //auth
         Route::get('/logout', [AuthController::class, 'logout']);
 
+
+        //report
+        Route::get('/reports/{id}', [ReportController::class, 'getUserAttendanceReport'])->where('id', '[0-9]+');
     });
 });
 

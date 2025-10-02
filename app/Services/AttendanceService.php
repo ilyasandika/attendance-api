@@ -19,55 +19,55 @@ use App\Helpers\Helper;
 
 class AttendanceService
 {
-    public function getAttendanceList($search = null, $date = null, int $userId = null, bool $all = false)
-    {
-        $query = Attendance::query();
+public function getAttendanceList($search = null, $date = null, int $userId = null, bool $all = false)
+{
+    $query = Attendance::query();
 
+    $query->with('user.profile.role', 'user.profile.department');
 
-        $query->with('user.profile.role', 'user.profile.department');
+    if ($date) {
+        $timestamp = (int) $date;
+        $date = date('Y-m-d', $timestamp);
+        $startOfDay = strtotime($date . ' 00:00:00');
+        $endOfDay = strtotime($date . ' 23:59:59');
 
-        if ($date) {
-            $timestamp = (int) $date;
-            $date = date('Y-m-d', $timestamp);
-            $startOfDay = strtotime($date . ' 00:00:00');
-            $endOfDay = strtotime($date . ' 23:59:59');
+        if ($all && !$userId) {
+            $query->whereBetween('date', [$startOfDay, $endOfDay])
+                ->orderBy('date', 'desc')
+                ->orderBy('check_in_time', 'desc');
+            return new AttendanceCollection($query->paginate(10));
+        }
 
-            if ($all && !$userId) {
-                $query->whereBetween('date', [$startOfDay, $endOfDay])
-                ->orderBy('updated_at', 'desc');
-                return new AttendanceCollection($query->paginate(10));
+        if (!$all && $userId) {
+
+            $query->where('user_id', $userId)->whereBetween('date', [$startOfDay, $endOfDay]);
+
+            $attendance = $query->first();
+            if (!$attendance) {
+                return $attendance;
             }
-
-            if (!$all && $userId) {
-
-                $query->where('user_id', $userId)->whereBetween('date', [$startOfDay, $endOfDay]);
-
-                $attendance = $query->first();
-                if (!$attendance) {
-                    return $attendance;
-                }
-                return new AttendanceResource($query->first());
-            }
-
+            return new AttendanceResource($attendance);
         }
 
-        if ($search) {
-            $query->whereHas('user', function ($query) use ($search) {
-                $query->where('employee_id', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhereHas('profile', function ($query) use ($search) {
-                        $query->where('name', 'like', "%{$search}%");
-                    });
-            });
-        }
-
-        $attendance = new AttendanceCollection($query->orderBy('updated_at', 'desc')->paginate(10));
-        if (!$attendance) {
-            throw new NotFoundHttpException(__('errorMessages.not_found'));
-        }
-
-        return $attendance;
     }
+
+    if ($search) {
+        $query->whereHas('user', function ($query) use ($search) {
+            $query->where('employee_id', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhereHas('profile', function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%");
+                });
+        });
+    }
+
+    $attendance = new AttendanceCollection($query
+        ->orderBy('date', 'desc')
+        ->orderBy('check_in_time', 'desc')
+        ->paginate(10));
+
+    return $attendance;
+}
 
     public function getAttendanceById(int $id)
     {
@@ -109,30 +109,41 @@ class AttendanceService
         $startOfDay = $date->copy()->startOfDay()->timestamp;
         $endOfDay   = $date->copy()->endOfDay()->timestamp;
 
-        $usersOff = User::whereHas('schedule.shift.shiftDay', function ($q) use ($dayName) {
+        $usersOff = User::where('role', 'employee')->whereHas('schedule.shift.shiftDay', function ($q) use ($dayName) {
             $q->where('name', $dayName)->where('is_on', 0);
         })->count();
 
+
+        $totalEmployee = User::where('role', 'employee')->count();
+        $totalOnTime = Attendance::whereBetween('date', [$startOfDay, $endOfDay])->where('check_in_status', 'on time')->count();
+        $totalLate = Attendance::whereBetween('date', [$startOfDay, $endOfDay])->where('check_in_status', 'late')->count();
+        $totalAbsent = Attendance::whereBetween('date', [$startOfDay, $endOfDay])->where('check_in_status', 'absent')->count();
+        $totalEarlyLeave= Attendance::whereBetween('date', [$startOfDay, $endOfDay])->where('check_out_status', 'early leave')->count();
+        $totalMissingCheckOut = Attendance::whereBetween('date', [$startOfDay, $endOfDay])->where('check_out_status', 'absent')->count();
+        $totalOutsideLocationCheckIn = Attendance::whereBetween('date', [$startOfDay, $endOfDay])->where('check_in_outside_location', 1)->count();
+        $totalOutsideLocationCheckOut =Attendance::whereBetween('date', [$startOfDay, $endOfDay])->where('check_out_outside_location', 1)->count();
+
         $attendanceSummary = [
-            'totalEmployee' => User::where('role', 'employee')->count(),
-            'totalOnTime'   => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
-                ->where('check_in_status', 'On Time')->count(),
-            'totalLate'     => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
-                ->where('check_in_status', 'Late')->count(),
-            'totalAbsent'   => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
-                ->where('check_in_status', 'Absent')->count(),
-            'totalEarlyLeave' => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
-                ->where('check_out_status', 'Early Leave')->count(),
-            'totalMissingCheckOut' => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
-                ->where('check_out_status', 'Absent')->count(),
-            'totalOutsideLocationCheckIn' => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
-                ->where('check_in_outside_location', 1)->count(),
-            'totalOutsideLocationCheckOut' => Attendance::whereBetween('date', [$startOfDay, $endOfDay])
-                ->where('check_out_outside_location', 1)->count(),
-            'usersOff' => $usersOff,
+            'totalEmployee' => $this->valuePercentage($totalEmployee, $totalEmployee),
+            'totalOnTime'   => $this->valuePercentage($totalOnTime, $totalEmployee),
+            'totalLate'     => $this->valuePercentage($totalLate, $totalEmployee),
+            'totalAbsent'   => $this->valuePercentage($totalAbsent, $totalEmployee),
+            'totalEarlyLeave' => $this->valuePercentage($totalEarlyLeave, $totalEmployee),
+            'totalMissingCheckOut' => $this->valuePercentage($totalMissingCheckOut, $totalEmployee),
+            'totalOutsideLocationCheckIn' =>$this->valuePercentage($totalOutsideLocationCheckIn, $totalEmployee),
+            'totalOutsideLocationCheckOut' => $this->valuePercentage($totalOutsideLocationCheckOut, $totalEmployee),
+            'usersOff' => $this->valuePercentage($usersOff, $totalEmployee)
         ];
 
         return new AttendanceSummaryResource((object) $attendanceSummary);
+    }
+
+    private function valuePercentage ($value, $total): array
+    {
+        return [
+            "value" => $value,
+            "percentage" => round($value / $total * 100, 2),
+        ];
     }
 
     public function getAttendanceTimeLine($date = null, $option = "monthly") {
@@ -264,7 +275,6 @@ class AttendanceService
             throw new NotFoundHttpException(__('errorMessages.user_is_off'));
         }
 
-
         $user = $this->getUserWithSchedule($userId);
 
         ['start' => $startOfDay, 'end' => $endOfDay] = $this->getStartEndOfDay();
@@ -281,18 +291,12 @@ class AttendanceService
         $breakEndScheduleTimestamp = strtotime("$today $breakEndSchedule");
         $breakTime = ($breakEndScheduleTimestamp - $breakStartScheduleTimestamp);
 
-        Log::info($startOfDay);
-        Log::info($endOfDay);
 
         $attendance = Attendance::where('user_id', $userId)
             ->whereBetween('date', [(int) $startOfDay, (int) $endOfDay])
             ->first();
 
-
-
-
-
-        $type = $attendance->check_in_time === null ? 'in' : 'out';
+        $type = $attendance?->check_in_time === null ? 'in' : 'out';
 
         $filename = $this->storeAttendancePhoto($file, $user->employee_id, $type);
 
@@ -310,8 +314,6 @@ class AttendanceService
 
         if (!$attendance) {
             $attendance = new Attendance();
-            Log::info("a");
-            Log::info($user->schedule->id);
             $attendance->user_id = $userId;
             $attendance->schedule_id = $user->schedule->id;
             $attendance->start_time = $checkInSchedule;
@@ -322,9 +324,10 @@ class AttendanceService
         if ($type === 'in') {
 
             $attendance->check_in_time = strtotime(now());
+            Log::info($attendance->check_in_time);
             $attendance->check_in_latitude = $data['latitude'];
             $attendance->check_in_longitude = $data['longitude'];
-            $attendance->check_in_status = $attendance->check_in_time < $checkInScheduleTimestamp ? "On Time" : "Late";
+            $attendance->check_in_status = $attendance->check_in_time < $checkInScheduleTimestamp ? "on time" : "late";
             $attendance->check_in_photo = $filename;
             $attendance->check_in_outside_location = $outsideLocation;
             $attendance->check_in_address = $data['address'];
@@ -332,6 +335,7 @@ class AttendanceService
             if ($attendance->check_in_time > $checkInScheduleTimestamp) {
                 $attendance->late_minutes = ($attendance->check_in_time - $checkInScheduleTimestamp) / 60;
             }
+
         } else {
 
             if ($attendance->check_out_photo) {
@@ -341,12 +345,12 @@ class AttendanceService
             $attendance->check_out_time = strtotime(now());
             $attendance->check_out_latitude = $data['latitude'];
             $attendance->check_out_longitude = $data['longitude'];
-            $attendance->check_out_status = $attendance->check_out_time > $checkOutScheduleTimestamp ? "On Time" : "Early Leave";
+            $attendance->check_out_status = $attendance->check_out_time > $checkOutScheduleTimestamp ? "on time" : "early leave";
             $attendance->check_out_photo = $filename;
             $attendance->check_out_outside_location = $outsideLocation;
             $attendance->check_out_address = $data['address'] ?? null;
             $attendance->check_out_comment = $data['comment'] ?? null;
-            $attendance->duration = ($attendance->check_out_time - $attendance->check_in_time - $breakTime) / 60;
+            $attendance->duration =max(0, ($attendance->check_out_time - $attendance->check_in_time) / 60);
             if ($attendance->check_out_time < $checkOutScheduleTimestamp) {
                 $attendance->early_leave_minutes = ($checkOutScheduleTimestamp - $attendance->check_out_time) / 60;
             }
@@ -355,6 +359,7 @@ class AttendanceService
                 $attendance->overtime_minutes = ($attendance->check_out_time - $checkOutScheduleTimestamp) / 60;
             }
         }
+
 
         if (!$attendance->save()) {
             throw new \Exception($type === 'in' ? __('errorMessages.create_failed') : __('errorMessages.update_failed'));
@@ -469,13 +474,13 @@ class AttendanceService
     private function updateForceCheckout($attendance, $now, $path)
     {
         $attendance->check_out_time = $now;
-        $attendance->check_out_status = "Absent";
+        $attendance->check_out_status = "absent";
         $attendance->check_out_outside_location = true;
         $attendance->auto_checkout = true;
         $attendance->check_out_photo = $path;
 
         if (is_null($attendance->check_in_time)) {
-            $attendance->check_in_status = "Absent";
+            $attendance->check_in_status = "absent";
             $attendance->check_in_photo = $path;
             $attendance->check_in_outside_location = true;
         }
@@ -490,8 +495,8 @@ class AttendanceService
             'date' => $now,
             'check_in_time' => null,
             'check_out_time' => $now,
-            'check_out_status' => "Absent",
-            'check_in_status' => "Absent",
+            'check_out_status' => "absent",
+            'check_in_status' => "absent",
             'check_in_latitude' => null,
             'check_in_longitude' => null,
             'check_out_latitude' => null,
@@ -504,6 +509,4 @@ class AttendanceService
             'auto_checkout' => true,
         ]);
     }
-
-
 }

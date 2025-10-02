@@ -15,17 +15,7 @@ class ScheduleCollection extends ResourceCollection
     public function toArray(Request $request): array
     {
         return [
-            "data" => $this->collection->map(function ($schedule) {
-                return [
-                    "schedulesId" => $schedule->id,
-                    "employeeId" => $schedule->user->employee_id,
-                    "employeeName" => $schedule->user->profile->name,
-                    "employeeRole" => $schedule->user->profile->role->name,
-                    "employeeDepartment" => $schedule->user->profile->department->name,
-                    "employeeShift" => $schedule->shift->name,
-                    "employeeWorkLocation" => $schedule->location->name
-                ];
-            }),
+            "data" => $this->collection,
             'meta' => [
                 'currentPage' => $this->currentPage(),
                 'lastPage' => $this->lastPage(),

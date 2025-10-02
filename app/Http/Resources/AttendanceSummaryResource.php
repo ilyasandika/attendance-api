@@ -15,15 +15,23 @@ class AttendanceSummaryResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'totalUser' => $this->totalEmployee,
-            'onTime' => $this->totalOnTime,
-            'late' => $this->totalLate,
-            'earlyLeave' => $this->totalEarlyLeave,
-            'absent' => $this->totalAbsent,
-            'dayOff' => $this->usersOff,
-            'missingCheckOut' => $this->totalMissingCheckOut,
-            'outsideLocationCheckIn' => $this->totalOutsideLocationCheckIn,
-            'outsideLocationCheckOut' => $this->totalOutsideLocationCheckOut,
+            'totalUser' => $this->valuePercentage($this->totalEmployee),
+            'onTime' => $this->valuePercentage($this->totalOnTime),
+            'late' => $this->valuePercentage($this->totalLate),
+            'earlyLeave' => $this->valuePercentage($this->totalEarlyLeave),
+            'absent' => $this->valuePercentage($this->totalAbsent),
+            'dayOff' => $this->valuePercentage($this->usersOff),
+            'missingCheckOut' => $this->valuePercentage($this->totalMissingCheckOut),
+            'outsideLocationCheckIn' => $this->valuePercentage($this->totalOutsideLocationCheckIn),
+            'outsideLocationCheckOut' => $this->valuePercentage($this->totalOutsideLocationCheckOut),
+        ];
+    }
+
+    private function valuePercentage ($val): array
+    {
+        return [
+            "value" => $val['value'],
+            "percentage" => $val['percentage'],
         ];
     }
 }

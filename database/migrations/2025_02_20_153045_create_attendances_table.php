@@ -19,7 +19,7 @@ return new class extends Migration
             //history
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
-            $table->integer('duration')->nullable();
+            $table->integer('duration')->nullable(); //minutes
             $table->integer('late_minutes')->nullable();
             $table->integer('early_leave_minutes')->nullable();
             $table->integer('overtime_minutes')->nullable();
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->decimal('check_in_latitude', 10, 7)->nullable();
             $table->decimal('check_in_longitude', 10, 7)->nullable();
             $table->text('check_in_address')->nullable();
-            $table->enum('check_in_status', ['On Time', 'Late', 'Absent'])->nullable();
+            $table->enum('check_in_status', ['on time', 'late', 'absent'])->nullable();
             $table->text('check_in_comment')->nullable();
             $table->boolean('check_in_outside_location')->default(false);
 
@@ -40,11 +40,9 @@ return new class extends Migration
             $table->decimal('check_out_latitude', 10, 7)->nullable();
             $table->decimal('check_out_longitude', 10, 7)->nullable();
             $table->text('check_out_address')->nullable();
-            $table->enum('check_out_status', ['On Time', 'Early Leave', 'Absent'])->nullable();
+            $table->enum('check_out_status', ['on time', 'early leave', 'absent'])->nullable();
             $table->text('check_out_comment')->nullable();
             $table->boolean('check_out_outside_location')->default(false);
-
-
 
 
             $table->boolean('auto_checkout')->default(false);
