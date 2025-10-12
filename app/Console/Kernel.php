@@ -21,6 +21,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:generate-leave-entitlement')
             ->yearly()
             ->timezone('Asia/Jakarta');
+
+        $schedule->command('app:test-cronjob')
+            ->everyFifteenSeconds();
     }
 
     /**
