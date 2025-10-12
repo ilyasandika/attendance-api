@@ -12,7 +12,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-//        $schedule->command('app:force-check-command')->everyMinute();
+        $schedule->command('app:generate-baseline-attendance')
+            ->dailyAt('00:01')
+            ->timezone('Asia/Jakarta');
+        $schedule->command('app:force-check-command')
+            ->dailyAt('23:59')
+            ->timezone('Asia/Jakarta');
+        $schedule->command('app:generate-leave-entitlement')
+            ->yearly()
+            ->timezone('Asia/Jakarta');
     }
 
     /**
