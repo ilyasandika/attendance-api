@@ -43,6 +43,11 @@ class User extends Authenticatable
         return $this->hasMany(Leave::class, "user_id", "id");
     }
 
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class, "user_id", "id");
+    }
+
     const ROLE_ADMIN = 'admin';
     const ROLE_EMPLOYEE = 'employee';
 

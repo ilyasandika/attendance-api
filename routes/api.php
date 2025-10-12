@@ -96,7 +96,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/roles/{id}', [RoleController::class, 'updateRoleById'])->where('id', '[0-9]+');
         Route::get('/roles/{id}', [RoleController::class, 'getRoleById'])->where('id', '[0-9]+');
 
-
         //attendance
         Route::get('/attendances', [AttendanceController::class, 'showAttendanceList']);
         Route::get('/attendances/generate', [AttendanceController::class, 'generateBaseline']);
@@ -164,9 +163,11 @@ Route::middleware('auth:sanctum')->group(function () {
         //auth
         Route::get('/logout', [AuthController::class, 'logout']);
 
-
         //report
         Route::get('/reports/{id}', [ReportController::class, 'getUserAttendanceReport'])->where('id', '[0-9]+');
+        Route::get('/reports/{id}/{year}', [ReportController::class, 'getUserAttendanceReportByYear'])->where('id', '[0-9]+');
+        Route::get('/reports/years', [ReportController::class, 'getAvailableReportYears']);
+        Route::get('/reports/attendance/user/{id}/download', [ReportController::class, 'getAttendanceReportExcel']);
     });
 });
 

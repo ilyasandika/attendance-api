@@ -62,8 +62,18 @@ return [
     'required' => ':attribute wajib diisi.',
     'string' => ':attribute harus berupa teks.',
     'email' => 'Format :attribute tidak valid.',
-    'max' => ':attribute tidak boleh lebih dari :max karakter.',
-    'min' => ':attribute minimal :min karakter.',
+    'min' => [
+        'numeric' => ':attribute minimal :min.',
+        'file' => ':attribute minimal :min kilobytes.',
+        'string' => ':attribute minimal memiliki :min karakter.',
+        'array' => ':attribute minimal memiliki :min item.',
+    ],
+    'max' => [
+        'numeric' => ':attribute maksimal :max.',
+        'file' => ':attribute maksimal :max kilobytes.',
+        'string' => ':attribute tidak boleh lebih dari :max karakter.',
+        'array' => ':attribute tidak boleh lebih dari :max item.',
+    ],
     'unique' => ':attribute sudah digunakan.',
     'in' => ':attribute harus salah satu dari: :values.',
     'boolean' => ':attribute harus true atau false.',
@@ -97,7 +107,9 @@ return [
         "radius" => "Radius",
         "address" => "Alamat",
         "description" => "Deskripsi",
-        "default" => "Default"
+        "default" => "Default",
+        "reason" => "Alasan",
+        "attachment" => "Lampiran"
     ],
 
 

@@ -430,12 +430,11 @@ public function getAttendanceList($search = null, $date = null, int $userId = nu
     public function generateDailyBaseline()
     {
         $path = 'photos/default_auto_checkout.jpg';
-        $today = now()->toDateString();
-        $startOfDay = strtotime($today . ' 00:01:00');
-        $endOfDay = strtotime($today . ' 23:59:59');
+        $startOfDay = Carbon::today()->startOfDay()->timestamp;
+        $endOfDay = Carbon::today()->endOfDay()->timestamp;
 
         $users = User::with('schedule.shift.shiftDay', 'schedule.location')
-            ->where('role', 'employee') // kalau mau filter role employee
+            ->where('role', 'employee')
             ->get();
 
         foreach ($users as $user) {
@@ -444,12 +443,8 @@ public function getAttendanceList($search = null, $date = null, int $userId = nu
             $dayName = strtolower(now()->format('l'));
             $shiftDay = $user->schedule->shift->shiftDay->where('name', $dayName)->first();
 
-            if (!$shiftDay || !$shiftDay->is_on) continue; // kalau bukan hari kerja, skip
+            if (!$shiftDay || !$shiftDay->is_on) continue;
 
-
-
-
-            // cek apakah sudah ada attendance record
             $attendance = Attendance::where('user_id', $user->id)
                 ->whereBetween('date', [$startOfDay, $endOfDay])
                 ->first();

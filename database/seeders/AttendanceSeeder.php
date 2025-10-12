@@ -15,7 +15,7 @@ class AttendanceSeeder extends Seeder
         $longitude = 106.7873879;
 
         $startDate = Carbon::create(2025, 6, 1);
-        $endDate   = Carbon::create(2025, 9, 26);
+        $endDate   = Carbon::create(2025, 10, 5);
 
         $records = [];
 

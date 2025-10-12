@@ -19,9 +19,11 @@ class UserController extends Controller
 
     public function getUsers(Request $request)
     {
-        $data = $this->userService->getUsers($request->query("search"));
+
+        $data = $this->userService->getUsers($request->query("search"), $request->query("all"));
         return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
+
 
     public function getUserById(Request $request)
     {

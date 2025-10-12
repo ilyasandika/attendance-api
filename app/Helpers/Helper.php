@@ -122,4 +122,24 @@ class Helper
         }
         return $model;
     }
+
+    public static function getDateRangeOrDefaultFromString(string $startDate = null, string $endDate = null, $type = "month"): array
+    {
+       if ($type === "month"){
+           $start = $startDate
+               ? Carbon::createFromFormat('d-m-Y', $startDate)->startOfDay()
+               : Carbon::now()->startOfMonth()->startOfDay();
+           $end = $endDate
+               ? Carbon::createFromFormat('d-m-Y', $endDate)->endOfDay()
+               : Carbon::now()->endOfMonth()->endOfDay();
+
+           return [
+               'month' => $start->format('Y-F'),
+               'startDate' => (int) $start->timestamp,
+               'endDate' => (int) $end->timestamp,
+           ];
+       }
+
+       return [];
+    }
 }

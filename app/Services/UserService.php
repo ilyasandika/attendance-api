@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Resources\AllUserCollection;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -13,9 +14,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserService
 {
-    public function getUsers($search = null)
+    public function getUsers($search = null, $all = false)
     {
-        $query = User::query();
+        $query = User::query()->with('profile');
 
         if ($search) {
             $query->where("employee_id", "like", "%{$search}%")
@@ -25,7 +26,11 @@ class UserService
                 });
         }
 
-        return new UserCollection($query->with("profile")->paginate(10));
+        if ($all) {
+            return new AllUserCollection($query->get());
+        }
+
+        return new UserCollection($query->paginate(10));
     }
 
     public function getUserById(int $id)

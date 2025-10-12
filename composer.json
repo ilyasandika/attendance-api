@@ -11,7 +11,8 @@
         "laravel/framework": "^10.10",
         "laravel/octane": "^2.8",
         "laravel/sanctum": "^3.3",
-        "laravel/tinker": "^2.8"
+        "laravel/tinker": "^2.8",
+        "maatwebsite/excel": "^3.1"
     },
     "require-dev": {
         "beyondcode/laravel-er-diagram-generator": "^5.0",

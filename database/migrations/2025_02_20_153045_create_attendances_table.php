@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('schedule_id')->nullable()->constrained('schedules')->onDelete('cascade');
 
-            $table->integer('date');
+            $table->bigInteger('date');
 
             //history
             $table->time('start_time')->nullable();
