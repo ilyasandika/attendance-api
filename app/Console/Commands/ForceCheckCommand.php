@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Services\AttendanceService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class ForceCheckCommand extends Command
 {
@@ -28,7 +29,7 @@ class ForceCheckCommand extends Command
     {
         $attendanceServices = new AttendanceService();
         $attendanceServices->forceCheckoutAll();
+        Log::info('Cron Job Sukses: Force Check All via service dijalankan.');
 
-        $this->info("Force check all done");
     }
 }

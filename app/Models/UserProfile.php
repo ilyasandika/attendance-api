@@ -44,6 +44,6 @@ class UserProfile extends Model
     {
         return $value
             ? url("storage/{$value}")
-            : url("images/default_profile.svg");
+            : url("images/default_profile.png");
     }
 }

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Services\LeaveEntitlementService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class GenerateLeaveEntitlement extends Command
 {
