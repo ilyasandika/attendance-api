@@ -44,6 +44,7 @@ class UpdateUserRequest extends FormRequest
                 Rule::unique('users', 'email')->ignore($userId),
             ],
             'roleId' => 'required|integer',
+            "roleAccount" => 'required|in:admin,employee',
             'departmentId' => 'required|integer',
             'shiftId' => 'required|integer',
             'locationId' => 'required|integer',

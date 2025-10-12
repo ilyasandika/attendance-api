@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\Helper;
+use App\Models\LeaveEntitlement;
 use App\Models\Schedule;
 use App\Models\User;
 use App\Models\UserProfile;
@@ -10,9 +11,11 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Console\Migrations\StatusCommand;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class AuthService
@@ -20,10 +23,11 @@ class AuthService
     public function register(array $data): User
     {
         return DB::transaction(function () use ($data) {
+            Log::info($data['roleAccount']);
             $user = User::create([
                 'employee_id' => $data['employeeId'],
                 'email' => $data['email'],
-                'role' => 'employee',
+                'role' => $data['roleAccount'],
                 'password' => Hash::make($data['password']),
             ]);
 
@@ -41,6 +45,12 @@ class AuthService
                 'user_id' => $user->id,
                 'shift_id' => $data['shiftId'],
                 'location_id' => $data['locationId'],
+            ]);
+
+            LeaveEntitlement::create([
+                "user_id" => $user->id,
+                "year" => Carbon::now()->year,
+                "total_days" => 12,
             ]);
 
             return $user;

@@ -62,6 +62,7 @@ class UserService
             $user->employee_id = $data['employeeId'];
             $user->email = $data['email'];
             $user->status = $data['status'];
+            $user->role = $data['roleAccount'];
 
             if (!empty($data['password'])) {
                 $user->password = Hash::make($data['password']);

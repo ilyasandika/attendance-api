@@ -26,6 +26,7 @@ class RegisterUserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'gender' => 'required|string|in:male,female',
             'birthDate' => 'required|integer',
+            'roleAccount' => 'nullable|in:admin,employee',
             'phoneNumber' => 'required|string|regex:/^\+?[0-9]{9,20}$/',
             'email' => 'required|string|email|max:255|unique:users,email',
             'roleId' => 'required|integer',
