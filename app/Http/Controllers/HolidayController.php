@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Helper;
+use App\Http\Requests\HolidayRequest;
 use App\Services\HolidayService;
 use Illuminate\Http\Request;
 
@@ -21,18 +22,17 @@ class HolidayController extends Controller
     public function showHolidayList(request $request)
     {
         $result = $this->holidayService->getHolidayList($request->query('search'));
-        return (!$result['status']) ? Helper::responseError($result['data'], "UNAUTHORIZED") : Helper::responseSuccess($result['data'], "SUCCESS");
+        return helper::responseSuccessTry($result, "SUCCESS");
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function createHoliday(Request $request)
+    public function createHoliday(HolidayRequest $request)
     {
+        $request->validated();
         $result = $this->holidayService->createHoliday($request->all());
-
-//        dd($result["data"]);
-        return (!$result["status"]) ? Helper::responseError($result["errors"], "UNAUTHORIZED") : Helper::responseSuccess($result["data"], "SUCCESS");
+        return helper::responseSuccessTry($result, "SUCCESS");
     }
 
     /**
@@ -40,17 +40,19 @@ class HolidayController extends Controller
      */
     public function showHolidayById(Request $request)
     {
+
         $result = $this->holidayService->getHolidayById($request->route('id'));
-        return (!$result['status']) ? Helper::responseError($result['data'], "UNAUTHORIZED") : Helper::responseSuccess($result['data'], "SUCCESS");
+        return helper::responseSuccessTry($result, "SUCCESS");
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function updateHolidayById(Request $request)
+    public function updateHolidayById(HolidayRequest $request)
     {
+        $request->validated();
         $result = $this->holidayService->updateHolidayById($request->all(), $request->route('id'));
-        return (!$result['status']) ? Helper::responseError($result['data'], "UNAUTHORIZED") : Helper::responseSuccess($result['data'], "SUCCESS");
+        return helper::responseSuccessTry($result, "SUCCESS");
     }
 
     /**
@@ -59,6 +61,6 @@ class HolidayController extends Controller
     public function deleteHolidayById(Request $request)
     {
         $result = $this->holidayService->deleteHolidayById($request->route('id'));
-        return (!$result['status']) ? Helper::responseError($result['data'], "UNAUTHORIZED") : Helper::responseSuccess($result['data'], "SUCCESS");
+        return helper::responseSuccessTry($result, "SUCCESS");
     }
 }

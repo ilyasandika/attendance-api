@@ -25,55 +25,30 @@ class HolidayService
             return Helper::returnIfNotFound($holidays, "Holiday not found");
         }
 
-        return Helper::returnSuccess(new HolidayCollection($holidays));
+        return new HolidayCollection($holidays);
     }
 
     public function getHolidayById($id)
     {
-        $holiday = Holiday::find($id);
-        if (!$holiday) {
-            return Helper::returnIfNotFound($holiday, "Holiday not found");
-        }
+        $holiday = Helper::findOrError(Holiday::class, $id);
 
-        return Helper::returnSuccess(new HolidayResource($holiday));
+
+        return new HolidayResource($holiday);
     }
 
     public function createHoliday($data)
     {
-        $validator = Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'date' => 'required|date|unique:holidays,date',
-        ]);
-
-        if ($validator->fails()) {
-            return [
-                'status' => false,
-                'errors' => $validator->errors(),
-            ];
-        }
 
         $holiday = Holiday::create([
             "name" => $data["name"],
             "date" => $data["date"],
         ]);
 
-        return Helper::returnSuccess(new HolidayResource($holiday));
+        return new HolidayResource($holiday);
     }
 
     public function updateHolidayById($data, $id)
     {
-        $validator = Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'date' => 'required|date|unique:holidays,date,' . $id,
-        ]);
-
-        if ($validator->fails()) {
-            return [
-                'status' => false,
-                'errors' => $validator->errors(),
-            ];
-        }
-
         $holiday = Holiday::find($id);
         if (!$holiday) {
             return Helper::returnIfNotFound($holiday, "Holiday not found");
@@ -85,20 +60,14 @@ class HolidayService
             'date' => $data['date'],
         ]);
 
-        return Helper::returnSuccess(new HolidayResource($holiday));
+        return new HolidayResource($holiday);
     }
 
 
     public function deleteHolidayById($id)
     {
-        $holiday = Holiday::find($id);
-        if (!$holiday) {
-            return Helper::returnIfNotFound($holiday, "Holiday not found");
-        }
-
+        $holiday = Helper::findOrError(Holiday::class, $id);
         $holiday->delete();
-
-        return Helper::returnSuccess(new HolidayResource($holiday));
     }
 
 }
