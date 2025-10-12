@@ -69,16 +69,23 @@ class AuthService
 
         $token = $user->createToken('login_token', [], now()->addHours(24))->plainTextToken;
 
-
         return [
             "token" => $token,
             "user" => $user
         ];
     }
 
-    public function logout(Request $request)
+    public function logoutAllDevice(Request $request)
     {
         $request->user()->tokens()->delete();
         return Helper::returnSuccess("Logout successful");
     }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+        return Helper::returnSuccess("Logout successful");
+    }
+
+
 }
