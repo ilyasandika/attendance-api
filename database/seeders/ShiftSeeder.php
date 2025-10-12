@@ -24,36 +24,10 @@ class ShiftSeeder extends Seeder
                     ["name" => "wednesday", "is_on" => 1],
                     ["name" => "thursday", "is_on" => 1],
                     ["name" => "friday", "is_on" => 1],
-                    ["name" => "saturday", "is_on" => 1],
-                    ["name" => "sunday", "is_on" => 1],
+                    ["name" => "saturday", "is_on" => 0],
+                    ["name" => "sunday", "is_on" => 0],
                 ]
             ],
-//            [
-//                "name" => "6 Days",
-//                "description" => "6 Days Work with Shorter Hours",
-//                "days" => [
-//                    ["name" => "monday", "is_on" => 1],
-//                    ["name" => "tuesday", "is_on" => 1],
-//                    ["name" => "wednesday", "is_on" => 1],
-//                    ["name" => "thursday", "is_on" => 1],
-//                    ["name" => "friday", "is_on" => 1],
-//                    ["name" => "saturday", "is_on" => 1],
-//                    ["name" => "sunday", "is_on" => 1],
-//                ]
-//            ],
-//            [
-//                "name" => "Shift Night",
-//                "description" => "Night Shift for IT Support",
-//                "days" => [
-//                    ["name" => "monday", "is_on" => 1],
-//                    ["name" => "tuesday", "is_on" => 1],
-//                    ["name" => "wednesday", "is_on" => 1],
-//                    ["name" => "thursday", "is_on" => 1],
-//                    ["name" => "friday", "is_on" => 1],
-//                    ["name" => "saturday", "is_on" => 1],
-//                    ["name" => "sunday", "is_on" => 1],
-//                ]
-//            ]
         ];
 
         foreach ($shifts as $shiftData) {
