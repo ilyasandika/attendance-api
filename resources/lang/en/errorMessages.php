@@ -36,4 +36,5 @@ return [
     'create_failed' => 'Failed to create',
 
     'not_allowed_outside_location' => 'You are not in the location of attendance',
+    'user_is_off' => 'you do not have a working schedule today'
 ];

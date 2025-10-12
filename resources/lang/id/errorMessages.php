@@ -35,4 +35,5 @@ return [
     //
     'create_failed' => 'Gagal membuat data',
     'not_allowed_outside_location' => 'Anda tidak berada di lokasi kehadiran',
+    'user_is_off' => 'anda tidak memiliki jadwal bekerja hari ini'
 ];
