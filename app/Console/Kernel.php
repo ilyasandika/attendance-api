@@ -22,8 +22,8 @@ class Kernel extends ConsoleKernel
             ->yearly()
             ->timezone('Asia/Jakarta');
 
-        $schedule->command('app:test-cronjob')
-            ->everyFifteenSeconds();
+//        $schedule->command('app:test-cronjob')
+//            ->everyFifteenSeconds();
     }
 
     /**
