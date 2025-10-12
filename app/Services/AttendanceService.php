@@ -114,7 +114,7 @@ public function getAttendanceList($search = null, $date = null, int $userId = nu
         })->count();
 
 
-        $totalEmployee = User::where('role', 'employee')->count();
+        $totalEmployee = User::count();
         $totalOnTime = Attendance::whereBetween('date', [$startOfDay, $endOfDay])->where('check_in_status', 'on time')->count();
         $totalLate = Attendance::whereBetween('date', [$startOfDay, $endOfDay])->where('check_in_status', 'late')->count();
         $totalAbsent = Attendance::whereBetween('date', [$startOfDay, $endOfDay])->where('check_in_status', 'absent')->count();
