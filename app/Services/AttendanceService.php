@@ -109,7 +109,7 @@ public function getAttendanceList($search = null, $date = null, int $userId = nu
         $startOfDay = $date->copy()->startOfDay()->timestamp;
         $endOfDay   = $date->copy()->endOfDay()->timestamp;
 
-        $usersOff = User::where('role', 'employee')->whereHas('schedule.shift.shiftDay', function ($q) use ($dayName) {
+        $usersOff = User::whereHas('schedule.shift.shiftDay', function ($q) use ($dayName) {
             $q->where('name', $dayName)->where('is_on', 0);
         })->count();
 
