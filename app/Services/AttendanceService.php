@@ -434,7 +434,6 @@ public function getAttendanceList($search = null, $date = null, int $userId = nu
         $endOfDay = Carbon::today()->endOfDay()->timestamp;
 
         $users = User::with('schedule.shift.shiftDay', 'schedule.location')
-            ->where('role', 'employee')
             ->get();
 
         foreach ($users as $user) {
