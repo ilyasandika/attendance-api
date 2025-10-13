@@ -45,8 +45,6 @@ class ReportService
                 $leaveDays->push($day->startOfDay()->timestamp);
             }
         }
-        Log::info($leaveDays);
-
         $attendances = Attendance::with('user.profile.role', 'user.profile.department')
             ->where('user_id', $userId)
             ->whereBetween('date', [$date['startDate'], $date['endDate']])
@@ -60,12 +58,12 @@ class ReportService
             ->whereBetween('date', [$date['startDate'], $date['endDate']])->count();
 
         $leave = $leaveDays->unique()->count();
-        $absent = $attendances->where('check_in_status', 'absent')->count();
+        $absent = $attendances->where('check_in_status', 'absent')->count() - $leave;
         $late = $attendances->where('check_in_status', 'late')->count();
         $earlyLeave = $attendances->where('check_out_status', 'early leave')->count();
         $onTime = $attendances->where('check_in_status', 'on time')->count();
-        $checkInOutsideLocation = $attendances->where('check_in_outside_location', 1)->count();
-        $checkOutOutsideLocation = $attendances->where('check_out_outside_location', 1)->count();
+        $checkInOutsideLocation = $attendances->where('check_in_outside_location', 1)->count() - $leave;
+        $checkOutOutsideLocation = $attendances->where('check_out_outside_location', 1)->count() - $leave;
 
         return  [
             'total' => $total,
