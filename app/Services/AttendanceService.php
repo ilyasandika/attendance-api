@@ -19,55 +19,51 @@ use App\Helpers\Helper;
 
 class AttendanceService
 {
-public function getAttendanceList($search = null, $date = null, int $userId = null, bool $all = false)
-{
-    $query = Attendance::query();
+    public function getAttendanceList($search = null, string $date = "", ?int $userId = null, bool $all = false)
+    {
+        $query = Attendance::query()
+            ->with(['user.profile.role', 'user.profile.department']);
 
-    $query->with('user.profile.role', 'user.profile.department');
-
-    if ($date) {
-        $timestamp = (int) $date;
-        $date = date('Y-m-d', $timestamp);
-        $startOfDay = strtotime($date . ' 00:00:00');
-        $endOfDay = strtotime($date . ' 23:59:59');
-
-        if ($all && !$userId) {
-            $query->whereBetween('date', [$startOfDay, $endOfDay])
-                ->orderBy('date', 'desc')
-                ->orderBy('check_in_time', 'desc');
-            return new AttendanceCollection($query->paginate(10));
+        // === Filter by date ===
+        if ($date) {
+            $carbonDate = Carbon::parse($date);
+            $startOfDay = $carbonDate->copy()->startOfDay();
+            $endOfDay = $carbonDate->copy()->endOfDay();
+            $query->whereBetween('date', [$startOfDay->timestamp, $endOfDay->timestamp]);
         }
 
-        if (!$all && $userId) {
+        // === Filter by user ===
+        if ($userId) {
+            $query->where('user_id', $userId);
+        }
 
-            $query->where('user_id', $userId)->whereBetween('date', [$startOfDay, $endOfDay]);
+        // === Filter by search ===
+        if ($search) {
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('employee_id', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('profile', fn ($q) =>
+                    $q->where('name', 'like', "%{$search}%")
+                    );
+            });
+        }
 
+        // === Ordering ===
+        $query->orderByDesc('date')
+            ->orderByDesc('check_in_time');
+
+        // === Return result ===
+        if ($date && $userId && !$all) {
+            // Single user's attendance for a specific day
             $attendance = $query->first();
-            if (!$attendance) {
-                return $attendance;
-            }
-            return new AttendanceResource($attendance);
+            return $attendance
+                ? new AttendanceResource($attendance)
+                : null;
         }
 
+        // Default: paginated list
+        return new AttendanceCollection($query->paginate(10));
     }
-
-    if ($search) {
-        $query->whereHas('user', function ($query) use ($search) {
-            $query->where('employee_id', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")
-                ->orWhereHas('profile', function ($query) use ($search) {
-                    $query->where('name', 'like', "%{$search}%");
-                });
-        });
-    }
-
-    $attendance = new AttendanceCollection($query
-        ->orderBy('date', 'desc')
-        ->orderBy('check_in_time', 'desc')
-        ->paginate(10));
-
-    return $attendance;
-}
 
     public function getAttendanceById(int $id)
     {

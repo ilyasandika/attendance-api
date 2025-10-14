@@ -33,7 +33,11 @@ class AttendanceController extends Controller
 
     public function showAttendanceList(Request $request)
     {
-        $result = $this->attendanceService->getAttendanceList($request->query('search'));
+
+        $result = $this->attendanceService->getAttendanceList(
+            $request->query('search'),
+            $request->query('date') ?? "",
+        );
 
         return helper::responseSuccessTry($result, "SUCCESS");
     }
@@ -57,7 +61,7 @@ class AttendanceController extends Controller
 
     public function showAttendanceListByDate(Request $request)
     {
-        $result = $this->attendanceService->getAttendanceList(null, $request->query('date'), null, true);
+        $result = $this->attendanceService->getAttendanceList(null, $request->query('date'));
         return helper::responseSuccessTry($result, "SUCCESS");
     }
 
