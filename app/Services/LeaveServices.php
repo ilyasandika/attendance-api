@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LeaveServices
 {
-    public function getLeaveList(int $userId = null, $search = null, $date = null, $status = [])
+    public function getLeaveList($search = null, int $rows = 10, int $userId = null, $date = null, $status = [])
     {
         $query = Leave::query()->with([
             'user.profile.department',

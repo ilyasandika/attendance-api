@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserService
 {
-    public function getUsers($search = null, $all = false)
+    public function getUsers($search = null, $all = false, int $rows = 10)
     {
         $query = User::query()->with('profile');
 
@@ -30,7 +30,7 @@ class UserService
             return new AllUserCollection($query->get());
         }
 
-        return new UserCollection($query->paginate(10));
+        return new UserCollection($query->paginate($rows));
     }
 
     public function getUserById(int $id)

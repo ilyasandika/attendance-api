@@ -36,7 +36,9 @@ class AttendanceController extends Controller
 
         $result = $this->attendanceService->getAttendanceList(
             $request->query('search'),
+            (int) $request->query('rows'),
             $request->query('date') ?? "",
+
         );
 
         return helper::responseSuccessTry($result, "SUCCESS");
@@ -49,13 +51,19 @@ class AttendanceController extends Controller
 
     public function showAttendanceListByUserIdPath(Request $request)
     {
-        $result = $this->attendanceService->getAttendanceListByUserId($request->route('id'));
+        $result = $this->attendanceService->getAttendanceListByUserId(
+                $request->route('id'),
+                $request->query('search',
+                    (int)$request->query('rows')));
         return helper::responseSuccessTry($result, "SUCCESS");
     }
 
     public function showAttendanceListByUserLogin(Request $request)
     {
-        $result = $this->attendanceService->getAttendanceListByUserId(Auth::user()->id, $request->query('search'));
+        $result = $this->attendanceService->getAttendanceListByUserId(
+            Auth::user()->id,
+            $request->query('search'),
+            (int)$request->query('rows'));
         return helper::responseSuccessTry($result, "SUCCESS");
     }
 
@@ -68,7 +76,11 @@ class AttendanceController extends Controller
     public function showAttendanceByDateAndUserLogin(Request $request)
     {
 //        dd($request->query('date'));
-        $result = $this->attendanceService->getAttendanceList(null, $request->query('date'), Auth::user()->id);
+        $result = $this->attendanceService->getAttendanceList(
+            null,
+            (int)$request->query('rows'),
+            $request->query('date'),
+            Auth::user()->id);
         return helper::responseSuccessTry($result, $result ? "SUCCESS" : "NOT FOUND");
     }
 

@@ -25,7 +25,12 @@ class LeaveController extends Controller
           'end' => $request->query('end_date')
         ];
 
-        $data = $this->leaveServices->getLeaveList(null, $request->query('search'), $date, $request->query('status'));
+        $data = $this->leaveServices->getLeaveList(
+            $request->query('search'),
+            (int)$request->query('rows'),
+            null,
+            $date,
+            $request->query('status'));
         return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 
@@ -36,7 +41,12 @@ class LeaveController extends Controller
             'end' => $request->query('end_date')
         ];
 
-        $data = $this->leaveServices->getLeaveList($request->route('id'), $request->query('search'), $date, $request->query('status'));
+        $data = $this->leaveServices->getLeaveList(
+            $request->query('search'),
+            (int)$request->query('rows'),
+            $request->route('id'),
+            $date,
+            $request->query('status'));
         return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 

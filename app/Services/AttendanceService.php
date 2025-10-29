@@ -19,7 +19,7 @@ use App\Helpers\Helper;
 
 class AttendanceService
 {
-    public function getAttendanceList($search = null, string $date = "", ?int $userId = null, bool $all = false)
+    public function getAttendanceList($search = null, int $rows = 10, string $date = "", ?int $userId = null, bool $all = false)
     {
         $query = Attendance::query()
             ->with(['user.profile.role', 'user.profile.department']);
@@ -62,7 +62,7 @@ class AttendanceService
         }
 
         // Default: paginated list
-        return new AttendanceCollection($query->paginate(10));
+        return new AttendanceCollection($query->paginate($rows));
     }
 
     public function getAttendanceById(int $id)
@@ -74,7 +74,7 @@ class AttendanceService
         return new AttendanceResource($attendance);
     }
 
-    public function getAttendanceListByUserId(int $userId, $search = null)
+    public function getAttendanceListByUserId(int $userId, $search = null, $rows = 10)
     {
         $query = Attendance::query();
         $query->with('user.profile.role', 'user.profile.department');
@@ -89,7 +89,7 @@ class AttendanceService
             });
         }
 
-        $attendance = new AttendanceCollection($query->where("user_id", $userId)->orderBy('date', 'desc')->paginate(10));
+        $attendance = new AttendanceCollection($query->where("user_id", $userId)->orderBy('date', 'desc')->paginate($rows));
 
         if (!$attendance) {
             throw new NotFoundHttpException(__('errorMessages.not_found'));

@@ -20,7 +20,7 @@ class UserController extends Controller
     public function getUsers(Request $request)
     {
 
-        $data = $this->userService->getUsers($request->query("search"), $request->query("all"));
+        $data = $this->userService->getUsers($request->query("search"), $request->query("all"), (int)$request->query("rows"));
         return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 
