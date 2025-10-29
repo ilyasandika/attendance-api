@@ -18,7 +18,11 @@ class ShiftController extends Controller
     }
 
     public function getShifts(Request $request) {
-        $data = $this->shiftServices->getShiftList(false, $request->query('search'));
+        $data = $this->shiftServices->getShiftList(
+            false,
+            $request->query('search'),
+            (int)$request->query('rows')
+        );
         return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 

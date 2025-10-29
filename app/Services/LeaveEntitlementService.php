@@ -13,7 +13,7 @@ use Carbon\Carbon;
 
 class  LeaveEntitlementService
 {
-    public function getLeaveEntitlements($search = null, $userId = null)
+public function getLeaveEntitlements($search = null, int $rows = 10, $userId = null)
     {
         $query = LeaveEntitlement::query()->with([
             'user.profile.role',
@@ -41,7 +41,7 @@ class  LeaveEntitlementService
                 ->whereColumn('user_id', 'leave_entitlements.user_id')
                 ->limit(1),
             )
-            ->paginate(10);
+            ->paginate($rows);
         return new LeaveEntitlementCollection($leaveEntitlements);
 
     }

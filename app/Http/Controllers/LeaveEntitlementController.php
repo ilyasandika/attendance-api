@@ -16,12 +16,18 @@ class LeaveEntitlementController extends Controller
     }
 
     public function getLeaveEntitlements(Request $request) {
-        $data = $this->leaveEntitlementService->getLeaveEntitlements($request->query('search'));
+        $data = $this->leaveEntitlementService->getLeaveEntitlements(
+            $request->query('search'),
+            (int)$request->query('rows'),
+        );
         return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 
     public function getLeaveEntitlementByUserId(Request $request) {
-        $data = $this->leaveEntitlementService->getLeaveEntitlements(null, $request->route('id'));
+        $data = $this->leaveEntitlementService->getLeaveEntitlements(
+            null,
+            $request->query('rows'),
+            $request->route('id'));
         return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 

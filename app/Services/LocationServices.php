@@ -32,7 +32,7 @@ class LocationServices
         return $location;
     }
 
-    public function getLocationList(bool $isAll = false, $search = null)
+    public function getLocationList(bool $isAll = false, $search = null, int $rows= 10)
     {
 
         if ($isAll) {
@@ -48,7 +48,7 @@ class LocationServices
             if ($search) {
                 $query->where("name", "like", "%{$search}%");
             }
-            $locations = new LocationCollection($query->paginate(10));
+            $locations = new LocationCollection($query->paginate($rows));
         }
         return $locations;
     }

@@ -24,7 +24,11 @@ class RoleController extends Controller
 
     public function getRoleList(Request $request)
     {
-        $data = $this->roleService->getRoleList(false, $request->query('search'));
+        $data = $this->roleService->getRoleList(
+            false,
+            $request->query('search'),
+            (int)$request->query("rows")
+        );
         return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 

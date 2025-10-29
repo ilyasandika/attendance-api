@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DepartmentService
 {
-    public function getDepartmentList(bool $isAll = false, $search = null)
+    public function getDepartmentList(bool $isAll = false, $search = null, int $rows=10)
     {
         if ($isAll) {
             $departments = Department::get()->map(function ($department) {
@@ -31,7 +31,7 @@ class DepartmentService
                 });
             }
 
-        $departments = new DepartmentCollection($query->paginate(10));
+        $departments = new DepartmentCollection($query->paginate($rows));
     }
 
     return $departments;

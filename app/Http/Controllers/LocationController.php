@@ -23,7 +23,11 @@ class LocationController extends Controller
     }
     public function getLocations(Request $request)
     {
-        $data = $this->locationServices->getLocationList(false, request('search'));
+        $data = $this->locationServices->getLocationList(
+            false,
+            $request->query('search'),
+            (int)$request->query('rows')
+        );
         return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 

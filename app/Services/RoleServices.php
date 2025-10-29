@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RoleServices
 {
-    public function getRoleList(bool $isAll = false, $search = null)
+    public function getRoleList(bool $isAll = false, $search = null, int $rows = 10)
     {
         if ($isAll) {
             $roles = Role::get()->map(function ($role) {
@@ -29,7 +29,7 @@ class RoleServices
                 });
             }
 
-            $roles = new RoleCollection($query->paginate(10));
+            $roles = new RoleCollection($query->paginate($rows));
         }
 
         return $roles;

@@ -23,7 +23,11 @@ class DepartmentController extends Controller
     }
     public function getDepartmentList(Request $request)
     {
-        $data = $this->departmentService->getDepartmentList(false, $request->query('search'));
+        $data = $this->departmentService->getDepartmentList(
+            false,
+            $request->query('search'),
+            (int)$request->query('rows')
+        );
         return Helper::responseSuccessTry($data, __('successMessages.fetch_success'));
     }
 

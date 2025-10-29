@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class HolidayService
 {
-    public function getHolidayList($search = null)
+    public function getHolidayList($search = null, int $rows= 10)
     {
         $query = Holiday::query();
 

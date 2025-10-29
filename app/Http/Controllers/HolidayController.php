@@ -21,7 +21,10 @@ class HolidayController extends Controller
     }
     public function showHolidayList(request $request)
     {
-        $result = $this->holidayService->getHolidayList($request->query('search'));
+        $result = $this->holidayService->getHolidayList(
+            $request->query('search'),
+            (int)$request->query('rows')
+        );
         return helper::responseSuccessTry($result, "SUCCESS");
     }
 

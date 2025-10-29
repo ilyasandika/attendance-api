@@ -15,7 +15,7 @@ class ShiftServices
 {
     private array $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
-    public function getShiftList(bool $isAll = false, $search = null)
+    public function getShiftList(bool $isAll = false, $search = null, int $rows = 10)
     {
         if ($isAll) {
             $shifts = Shift::get()->map(function ($shift) {
@@ -29,7 +29,7 @@ class ShiftServices
             $query = Shift::query();
             if ($search) $query->where("name", "like", "%{$search}%");
 
-            $shifts = new ShiftCollection($query->with("shiftDay")->paginate(10));
+            $shifts = new ShiftCollection($query->with("shiftDay")->paginate($rows));
         }
 
         return $shifts;
